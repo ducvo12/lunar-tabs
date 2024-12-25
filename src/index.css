@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.dark {
+  --surface1: #121212;
+  --surface2: #282828;
+  --text: #fff;
+}
