@@ -1,19 +1,44 @@
 import { useEffect, useRef, useState } from "react";
 
+interface Element {
+  reference: React.RefObject<HTMLDivElement>;
+  x: number;
+  y: number;
+  width: number | undefined;
+  height: number | undefined;
+}
+
 function App() {
   const [theme] = useState("dark");
   document.documentElement.classList.add(theme);
 
-  const boxRef = useRef<HTMLDivElement>(null);
-  const rect = boxRef.current?.getBoundingClientRect();
+  const [titleElement] = useState<Element>({
+    reference: useRef<HTMLDivElement>(null),
+    x: window.innerWidth / 2 - 100,
+    y: window.innerHeight / 2 - 100,
+    width: undefined,
+    height: undefined
+  });
+
+  useEffect(() => {
+    if (titleElement.reference.current) {
+      const rect = titleElement.reference.current.getBoundingClientRect();
+      titleElement.width = rect.width;
+      titleElement.height = rect.height;
+    }
+  });
 
   const [isDragging, setIsDragging] = useState(false);
 
   const [x, setX] = useState(
-    (rect ? window.innerWidth / 2 - rect.width / 2 : window.innerWidth / 2 - 100) - 25
+    (titleElement.width
+      ? window.innerWidth / 2 - titleElement.width / 2
+      : window.innerWidth / 2 - 100) - 25
   );
   const [y, setY] = useState(
-    (rect ? window.innerHeight / 2 - rect?.height / 2 : window.innerHeight / 2 - 100) - 25
+    (titleElement.height
+      ? window.innerHeight / 2 - titleElement?.height / 2
+      : window.innerHeight / 2 - 100) - 25
   );
 
   const mouseDown = () => {
@@ -26,9 +51,9 @@ function App() {
   useEffect(() => {
     const mouseMove = (e: MouseEvent) => {
       if (isDragging) {
-        if (rect) {
-          setX(e.clientX - rect.width / 2);
-          setY(e.clientY - rect.height / 2);
+        if (titleElement.width && titleElement.height) {
+          setX(e.clientX - titleElement.width / 2);
+          setY(e.clientY - titleElement.height / 2);
         }
       }
     };
@@ -43,7 +68,7 @@ function App() {
   return (
     <main className="flex w-screen h-screen items-center justify-center bg-surface1 font-quicksand">
       <div
-        ref={boxRef}
+        ref={titleElement.reference}
         className="absolute
           text-6xl text-text text-center"
         onMouseDown={mouseDown}
