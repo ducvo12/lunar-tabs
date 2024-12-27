@@ -7,3 +7,8 @@
   --surface2: #282828;
   --text: #fff;
 }
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
