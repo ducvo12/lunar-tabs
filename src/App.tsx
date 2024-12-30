@@ -20,6 +20,16 @@ function App() {
   document.documentElement.classList.add(theme);
 
   const [menuVisible, setMenuVisible] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+
+  const toggleMenu = () => {
+    setEditMode(false);
+    setMenuVisible(!menuVisible);
+  };
+  const toggleEditMode = () => {
+    setMenuVisible(false);
+    setEditMode(!editMode);
+  };
 
   /*
   const [elements, setElements] = useState<{ id: string }[]>([]);
@@ -52,8 +62,16 @@ function App() {
         <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white"></div>
       </div>
 
-      <Title x={window.innerWidth / 2} y={window.innerHeight / 2 - 30}></Title>
-      <Searchbar x={window.innerWidth / 2} y={window.innerHeight / 2 + 25}></Searchbar>
+      <Title
+        x={window.innerWidth / 2}
+        y={window.innerHeight / 2 - 30}
+        canBeDragged={editMode}
+      ></Title>
+      <Searchbar
+        x={window.innerWidth / 2}
+        y={window.innerHeight / 2 + 25}
+        canBeDragged={editMode}
+      ></Searchbar>
 
       <Menu visible={menuVisible} />
 
@@ -61,7 +79,15 @@ function App() {
         className="absolute bottom-3 right-3
           bg-neutral-800/50 hover:bg-black transition-colors
           rounded-full p-2 cursor-pointer"
-        onClick={() => setMenuVisible(!menuVisible)}
+        onClick={toggleMenu}
+      >
+        <GoGear className="text-white" style={{ fontSize: "40px" }} />
+      </div>
+      <div
+        className="absolute bottom-3 right-[73px]
+          bg-neutral-800/50 hover:bg-black transition-colors
+          rounded-full p-2 cursor-pointer"
+        onClick={toggleEditMode}
       >
         <GoGear className="text-white" style={{ fontSize: "40px" }} />
       </div>

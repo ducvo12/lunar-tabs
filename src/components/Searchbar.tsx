@@ -3,13 +3,14 @@ import Draggable from "react-draggable";
 interface SearchbarProps {
   x: number;
   y: number;
+  canBeDragged: boolean;
   id?: string;
   removeFunc?: (id: string) => void;
 }
 
-const Searchbar = ({ x, y }: SearchbarProps) => {
+const Searchbar = ({ x, y, canBeDragged }: SearchbarProps) => {
   return (
-    <Draggable defaultPosition={{ x: x - 350, y: y - 25 }} bounds="parent">
+    <Draggable defaultPosition={{ x: x - 350, y: y - 25 }} bounds="parent" disabled={!canBeDragged}>
       <div className="absolute">
         <form action="https://www.google.com/search" method="GET">
           <input
