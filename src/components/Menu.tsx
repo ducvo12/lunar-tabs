@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MenuWidgets from "./MenuWidgets";
 
 interface MenuProps {
   visible: boolean;
@@ -8,11 +9,7 @@ const Menu = ({ visible }: MenuProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = ["Widgets", "Settings", "Wallpaper"];
-  const tabContent = [
-    <div>Content for Tab 1</div>,
-    <div>Content for Tab 2</div>,
-    <div>Content for Tab 3</div>
-  ];
+  const tabContent = [<MenuWidgets />, <div>Content for Tab 2</div>, <div>Content for Tab 3</div>];
 
   return (
     <div
