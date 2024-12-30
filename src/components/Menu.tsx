@@ -7,7 +7,7 @@ interface MenuProps {
 const Menu = ({ visible }: MenuProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
-  const tabs = ["Tab 1", "Tab 2", "Tab 3"];
+  const tabs = ["Widgets", "Settings", "Wallpaper"];
   const tabContent = [
     <div>Content for Tab 1</div>,
     <div>Content for Tab 2</div>,
@@ -23,13 +23,12 @@ const Menu = ({ visible }: MenuProps) => {
         ${visible ? "opacity-100 visible" : "opacity-0 invisible"}`}
     >
       <div className="flex w-full justify-center">
-        <div className="flex h-10 w-1/3">
+        <div className="grid grid-flow-col grid-cols-3 h-10 w-1/3">
           {tabs.map((tab, index) => (
             <button
               key={index}
-              className={`flex-1 py-2 transition-all rounded-t-lg -mb-[1px] ${
-                activeTab === index ? "bg-neutral-800/50" : "bg-neutral-900/90"
-              }`}
+              className={`py-2 transition-all rounded-t-lg -mb-[1px]
+                ${activeTab === index ? "bg-neutral-800/50" : "bg-neutral-900/90"}`}
               onClick={() => setActiveTab(index)}
             >
               {tab}
