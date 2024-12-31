@@ -1,6 +1,6 @@
 import Draggable from "react-draggable";
 
-interface TitleProps {
+interface MessageProps {
   x: number;
   y: number;
   canBeDragged: boolean;
@@ -8,7 +8,7 @@ interface TitleProps {
   removeFunc?: (id: string) => void;
 }
 
-const Title = ({ x, y, canBeDragged }: TitleProps) => {
+const Message = ({ x, y, canBeDragged }: MessageProps) => {
   return (
     <Draggable defaultPosition={{ x: x - 125, y: y - 35 }} bounds="parent" disabled={!canBeDragged}>
       <div
@@ -21,4 +21,4 @@ const Title = ({ x, y, canBeDragged }: TitleProps) => {
   );
 };
 
-export default Title;
+export default Message;

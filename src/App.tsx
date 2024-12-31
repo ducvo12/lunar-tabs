@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Title from "./components/Title";
+import Message from "./components/Message";
 import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
@@ -83,7 +83,7 @@ function App() {
       </div>
 
       {messageElements.map((element) => (
-        <Title key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
+        <Message key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
       ))}
 
       {searchbarElements.map((element) => (
