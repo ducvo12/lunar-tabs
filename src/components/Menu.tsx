@@ -3,13 +3,18 @@ import MenuWidgets from "./MenuWidgets";
 
 interface MenuProps {
   visible: boolean;
+  func: () => void;
 }
 
-const Menu = ({ visible }: MenuProps) => {
+const Menu = ({ visible, func }: MenuProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = ["Widgets", "Settings", "Wallpaper"];
-  const tabContent = [<MenuWidgets />, <div>Content for Tab 2</div>, <div>Content for Tab 3</div>];
+  const tabContent = [
+    <MenuWidgets func={func} />,
+    <div>Content for Tab 2</div>,
+    <div>Content for Tab 3</div>
+  ];
 
   return (
     <div

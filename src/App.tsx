@@ -3,7 +3,7 @@ import Title from "./components/Title";
 import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
-// import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 /*
 things to add:
@@ -20,8 +20,8 @@ function App() {
   document.documentElement.classList.add(theme);
 
   const [menuVisible, setMenuVisible] = useState(false);
-  const [editMode, setEditMode] = useState(false);
 
+  const [editMode, setEditMode] = useState(false);
   const toggleMenu = () => {
     setEditMode(false);
     setMenuVisible(!menuVisible);
@@ -31,20 +31,40 @@ function App() {
     setEditMode(!editMode);
   };
 
-  /*
-  const [elements, setElements] = useState<{ id: string }[]>([]);
-
-  const addElement = () => {
-    const newSquare = { id: uuidv4() };
-    setElements([...elements, newSquare]);
+  const [messageElements, setMessageElements] = useState<{ id: string; x: number; y: number }[]>(
+    []
+  );
+  const addMessageElement = (
+    x: number = window.innerWidth / 2,
+    y: number = window.innerHeight / 2
+  ) => {
+    const newMessageElement = {
+      id: uuidv4(),
+      x: x,
+      y: y
+    };
+    setMessageElements([...messageElements, newMessageElement]);
   };
 
-  const removeElement = (id: string) => {
-    const newElements = elements.filter((element) => element.id !== id);
-    setElements(newElements);
-  };*/
+  const [searchbarElements, setSearchbarElements] = useState<
+    { id: string; x: number; y: number }[]
+  >([]);
+  const addSearchbarElement = (
+    x: number = window.innerWidth / 2,
+    y: number = window.innerHeight / 2
+  ) => {
+    const newSearchbarElement = {
+      id: uuidv4(),
+      x: x,
+      y: y
+    };
+    setSearchbarElements([...searchbarElements, newSearchbarElement]);
+  };
 
   useEffect(() => {
+    addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
+    addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
+
     const handleMouseMove = (event: MouseEvent) => {
       console.log(`Mouse X: ${event.clientX}, Mouse Y: ${event.clientY}`);
     };
@@ -62,18 +82,15 @@ function App() {
         <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white"></div>
       </div>
 
-      <Title
-        x={window.innerWidth / 2}
-        y={window.innerHeight / 2 - 30}
-        canBeDragged={editMode}
-      ></Title>
-      <Searchbar
-        x={window.innerWidth / 2}
-        y={window.innerHeight / 2 + 25}
-        canBeDragged={editMode}
-      ></Searchbar>
+      {messageElements.map((element) => (
+        <Title key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
+      ))}
 
-      <Menu visible={menuVisible} />
+      {searchbarElements.map((element) => (
+        <Searchbar key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
+      ))}
+
+      <Menu visible={menuVisible} func={addMessageElement} />
 
       <div
         className="absolute bottom-3 right-3
