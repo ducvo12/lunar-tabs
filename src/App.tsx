@@ -90,7 +90,11 @@ function App() {
         <Searchbar key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
       ))}
 
-      <Menu visible={menuVisible} func={addMessageElement} />
+      <Menu
+        visible={menuVisible}
+        addMessageFunc={addMessageElement}
+        addSearchbarFunc={addSearchbarElement}
+      />
 
       <div
         className="absolute bottom-3 right-3
