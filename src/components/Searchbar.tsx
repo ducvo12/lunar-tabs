@@ -1,18 +1,44 @@
+import { useRef, useState, useEffect } from "react";
 import Draggable from "react-draggable";
+import { GoX } from "react-icons/go";
 
 interface SearchbarProps {
   x: number;
   y: number;
   canBeDragged: boolean;
-  id?: string;
-  removeFunc?: (id: string) => void;
+  id: string;
+  removeFunc: (id: string) => void;
 }
 
-const Searchbar = ({ x, y, canBeDragged }: SearchbarProps) => {
+const Searchbar = ({ x, y, canBeDragged, id, removeFunc }: SearchbarProps) => {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
+
+  const updateCirclePosition = () => {
+    if (divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      const screenCenterX = window.innerWidth / 2;
+      const screenCenterY = window.innerHeight / 2;
+
+      setCirclePosition({
+        top: rect.top + rect.height / 2 < screenCenterY,
+        left: rect.left + rect.width / 2 < screenCenterX
+      });
+    }
+  };
+
+  useEffect(() => {
+    updateCirclePosition();
+    window.addEventListener("resize", updateCirclePosition);
+    return () => {
+      window.removeEventListener("resize", updateCirclePosition);
+    };
+  }, []);
+
   return (
     <Draggable defaultPosition={{ x: x - 350, y: y - 25 }} bounds="parent" disabled={!canBeDragged}>
       <div
-        className={`absolute outline-none
+        className={`absolute group outline-none
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline]`}
       >
@@ -28,6 +54,16 @@ const Searchbar = ({ x, y, canBeDragged }: SearchbarProps) => {
             readOnly={canBeDragged}
           />
         </form>
+        <div hidden={!canBeDragged}>
+          <GoX
+            onClick={() => removeFunc(id)}
+            className={`absolute text-xl rounded-full
+              bg-white text-black
+              opacity-0 group-hover:opacity-100 transition-opacity
+              ${circlePosition.top ? "-bottom-3" : "-top-3"}
+              ${circlePosition.left ? "-right-3" : "-left-3"}`}
+          ></GoX>
+        </div>
       </div>
     </Draggable>
   );

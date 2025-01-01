@@ -64,6 +64,10 @@ function App() {
     };
     setSearchbarElements([...searchbarElements, newSearchbarElement]);
   };
+  const removeSearchbarElement = (id: string) => {
+    const newSearchbarElement = searchbarElements.filter((element) => element.id !== id);
+    setMessageElements(newSearchbarElement);
+  };
 
   useEffect(() => {
     addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
@@ -98,7 +102,14 @@ function App() {
       ))}
 
       {searchbarElements.map((element) => (
-        <Searchbar key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
+        <Searchbar
+          key={element.id}
+          x={element.x}
+          y={element.y}
+          canBeDragged={editMode}
+          id={element.id}
+          removeFunc={removeSearchbarElement}
+        />
       ))}
 
       <Menu
