@@ -45,6 +45,10 @@ function App() {
     };
     setMessageElements([...messageElements, newMessageElement]);
   };
+  const removeMessageElement = (id: string) => {
+    const newMessageElements = messageElements.filter((element) => element.id !== id);
+    setMessageElements(newMessageElements);
+  };
 
   const [searchbarElements, setSearchbarElements] = useState<
     { id: string; x: number; y: number }[]
@@ -83,7 +87,14 @@ function App() {
       </div>
 
       {messageElements.map((element) => (
-        <Message key={element.id} x={element.x} y={element.y} canBeDragged={editMode} />
+        <Message
+          key={element.id}
+          x={element.x}
+          y={element.y}
+          canBeDragged={editMode}
+          id={element.id}
+          removeFunc={removeMessageElement}
+        />
       ))}
 
       {searchbarElements.map((element) => (
