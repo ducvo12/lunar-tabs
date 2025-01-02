@@ -49,6 +49,11 @@ function App() {
     const newMessageElements = messageElements.filter((element) => element.id !== id);
     setMessageElements(newMessageElements);
   };
+  const updateInfo = (id: string, x: number, y: number) => {
+    setMessageElements((prev) =>
+      prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
+    );
+  };
 
   const [searchbarElements, setSearchbarElements] = useState<
     { id: string; x: number; y: number }[]
@@ -72,16 +77,11 @@ function App() {
   useEffect(() => {
     addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
     addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
-
-    const handleMouseMove = (event: MouseEvent) => {
-      console.log(`Mouse X: ${event.clientX}, Mouse Y: ${event.clientY}`);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
   }, []);
+
+  useEffect(() => {
+    console.log(messageElements);
+  }, [messageElements]);
 
   return (
     <div className="w-screen h-screen bg-surface1 select-none font-quicksand overflow-hidden">
@@ -98,6 +98,7 @@ function App() {
           canBeDragged={editMode}
           id={element.id}
           removeFunc={removeMessageElement}
+          updateFunc={updateInfo}
         />
       ))}
 

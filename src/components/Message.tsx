@@ -8,9 +8,10 @@ interface MessageProps {
   canBeDragged: boolean;
   id: string;
   removeFunc: (id: string) => void;
+  updateFunc: (id: string, x: number, y: number) => void;
 }
 
-const Message = ({ x, y, canBeDragged, id, removeFunc }: MessageProps) => {
+const Message = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: MessageProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
 
@@ -27,6 +28,11 @@ const Message = ({ x, y, canBeDragged, id, removeFunc }: MessageProps) => {
     }
   };
 
+  const handleStop = (e: unknown, data: { x: number; y: number }) => {
+    updateCirclePosition();
+    updateFunc(id, data.x, data.y);
+  };
+
   useEffect(() => {
     updateCirclePosition();
     window.addEventListener("resize", updateCirclePosition);
@@ -41,7 +47,7 @@ const Message = ({ x, y, canBeDragged, id, removeFunc }: MessageProps) => {
       bounds="parent"
       disabled={!canBeDragged}
       onDrag={updateCirclePosition}
-      onStop={updateCirclePosition}
+      onStop={handleStop}
     >
       <div
         ref={divRef}
