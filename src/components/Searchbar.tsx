@@ -36,8 +36,15 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc }: SearchbarProps) => {
   }, []);
 
   return (
-    <Draggable defaultPosition={{ x: x - 350, y: y - 25 }} bounds="parent" disabled={!canBeDragged}>
+    <Draggable
+      defaultPosition={{ x: x - 350, y: y - 25 }}
+      bounds="parent"
+      disabled={!canBeDragged}
+      onDrag={updateCirclePosition}
+      onStop={updateCirclePosition}
+    >
       <div
+        ref={divRef}
         className={`absolute group outline-none
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline]`}
