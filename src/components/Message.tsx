@@ -43,7 +43,7 @@ const Message = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: MessageProp
 
   return (
     <Draggable
-      defaultPosition={{ x: x - 125, y: y - 35 }}
+      defaultPosition={{ x: x, y: y }}
       bounds="parent"
       disabled={!canBeDragged}
       onDrag={updateCirclePosition}

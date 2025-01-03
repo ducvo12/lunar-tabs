@@ -16,6 +16,8 @@ twitter posts?
 */
 
 function App() {
+  const [dataInitialized, setDataInitialized] = useState(false);
+
   const [theme] = useState("dark");
   document.documentElement.classList.add(theme);
 
@@ -40,8 +42,8 @@ function App() {
   ) => {
     const newMessageElement = {
       id: uuidv4(),
-      x: x,
-      y: y
+      x: x - 125,
+      y: y - 35
     };
     setMessageElements([...messageElements, newMessageElement]);
   };
@@ -49,11 +51,19 @@ function App() {
     const newMessageElements = messageElements.filter((element) => element.id !== id);
     setMessageElements(newMessageElements);
   };
-  const updateInfo = (id: string, x: number, y: number) => {
+  const updateMessageElementInfo = (id: string, x: number, y: number) => {
     setMessageElements((prev) =>
       prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
     );
   };
+  useEffect(() => {
+    if (!dataInitialized) {
+      setDataInitialized(true);
+    } else {
+      localStorage.setItem("messageElements", JSON.stringify(messageElements));
+      console.log("change:", messageElements);
+    }
+  }, [messageElements]);
 
   const [searchbarElements, setSearchbarElements] = useState<
     { id: string; x: number; y: number }[]
@@ -75,13 +85,15 @@ function App() {
   };
 
   useEffect(() => {
-    addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
-    addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
+    const savedMessageElements = localStorage.getItem("messageElements");
+    if (savedMessageElements) {
+      setMessageElements(JSON.parse(savedMessageElements));
+    } else {
+      addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
+      addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
+    }
   }, []);
 
-  useEffect(() => {
-    console.log(messageElements);
-  }, [messageElements]);
 
   return (
     <div className="w-screen h-screen bg-surface1 select-none font-quicksand overflow-hidden">
@@ -98,7 +110,7 @@ function App() {
           canBeDragged={editMode}
           id={element.id}
           removeFunc={removeMessageElement}
-          updateFunc={updateInfo}
+          updateFunc={updateMessageElementInfo}
         />
       ))}
 
