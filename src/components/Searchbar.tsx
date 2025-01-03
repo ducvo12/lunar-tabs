@@ -8,9 +8,10 @@ interface SearchbarProps {
   canBeDragged: boolean;
   id: string;
   removeFunc: (id: string) => void;
+  updateFunc: (id: string, x: number, y: number) => void;
 }
 
-const Searchbar = ({ x, y, canBeDragged, id, removeFunc }: SearchbarProps) => {
+const Searchbar = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: SearchbarProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
 
@@ -27,6 +28,11 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc }: SearchbarProps) => {
     }
   };
 
+  const handleStop = (e: unknown, data: { x: number; y: number }) => {
+    updateCirclePosition();
+    updateFunc(id, data.x, data.y);
+  };
+
   useEffect(() => {
     updateCirclePosition();
     window.addEventListener("resize", updateCirclePosition);
@@ -37,11 +43,11 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc }: SearchbarProps) => {
 
   return (
     <Draggable
-      defaultPosition={{ x: x - 350, y: y - 25 }}
+      defaultPosition={{ x: x, y: y }}
       bounds="parent"
       disabled={!canBeDragged}
       onDrag={updateCirclePosition}
-      onStop={updateCirclePosition}
+      onStop={handleStop}
     >
       <div
         ref={divRef}

@@ -56,14 +56,6 @@ function App() {
       prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
     );
   };
-  useEffect(() => {
-    if (!dataInitialized) {
-      setDataInitialized(true);
-    } else {
-      localStorage.setItem("messageElements", JSON.stringify(messageElements));
-      console.log("change:", messageElements);
-    }
-  }, [messageElements]);
 
   const [searchbarElements, setSearchbarElements] = useState<
     { id: string; x: number; y: number }[]
@@ -74,8 +66,8 @@ function App() {
   ) => {
     const newSearchbarElement = {
       id: uuidv4(),
-      x: x,
-      y: y
+      x: x - 350,
+      y: y - 25
     };
     setSearchbarElements([...searchbarElements, newSearchbarElement]);
   };
@@ -83,16 +75,33 @@ function App() {
     const newSearchbarElement = searchbarElements.filter((element) => element.id !== id);
     setMessageElements(newSearchbarElement);
   };
+  const updateSearchbarElementInfo = (id: string, x: number, y: number) => {
+    setSearchbarElements((prev) =>
+      prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
+    );
+  };
 
   useEffect(() => {
     const savedMessageElements = localStorage.getItem("messageElements");
-    if (savedMessageElements) {
-      setMessageElements(JSON.parse(savedMessageElements));
-    } else {
+    const savedSearchbarElements = localStorage.getItem("searchbarElements");
+
+    if (!savedMessageElements && !savedSearchbarElements) {
       addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
       addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
+    } else {
+      setMessageElements(JSON.parse(savedMessageElements || "[]"));
+      setSearchbarElements(JSON.parse(savedSearchbarElements || "[]"));
     }
   }, []);
+
+  useEffect(() => {
+    if (!dataInitialized) {
+      setDataInitialized(true);
+    } else {
+      localStorage.setItem("messageElements", JSON.stringify(messageElements));
+      localStorage.setItem("searchbarElements", JSON.stringify(searchbarElements));
+    }
+  }, [messageElements, searchbarElements]);
 
   const clearLocalStorage = () => {
     localStorage.clear();
@@ -126,6 +135,7 @@ function App() {
           canBeDragged={editMode}
           id={element.id}
           removeFunc={removeSearchbarElement}
+          updateFunc={updateSearchbarElementInfo}
         />
       ))}
 
