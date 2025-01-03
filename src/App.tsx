@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Message from "./components/Message";
 import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
@@ -16,7 +16,7 @@ twitter posts?
 */
 
 function App() {
-  const [dataInitialized, setDataInitialized] = useState(false);
+  const dataInitializedRef = useRef(false);
 
   const [theme] = useState("dark");
   document.documentElement.classList.add(theme);
@@ -92,11 +92,13 @@ function App() {
       setMessageElements(JSON.parse(savedMessageElements || "[]"));
       setSearchbarElements(JSON.parse(savedSearchbarElements || "[]"));
     }
+    // check this out later!!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (!dataInitialized) {
-      setDataInitialized(true);
+    if (!dataInitializedRef.current) {
+      dataInitializedRef.current = true;
     } else {
       localStorage.setItem("messageElements", JSON.stringify(messageElements));
       localStorage.setItem("searchbarElements", JSON.stringify(searchbarElements));

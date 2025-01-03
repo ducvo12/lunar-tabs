@@ -28,7 +28,7 @@ const Message = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: MessageProp
     }
   };
 
-  const handleStop = (e: unknown, data: { x: number; y: number }) => {
+  const handleStop = (data: { x: number; y: number }) => {
     updateCirclePosition();
     updateFunc(id, data.x, data.y);
   };
@@ -47,7 +47,7 @@ const Message = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: MessageProp
       bounds="parent"
       disabled={!canBeDragged}
       onDrag={updateCirclePosition}
-      onStop={handleStop}
+      onStop={(_, data) => handleStop(data)}
     >
       <div
         ref={divRef}
