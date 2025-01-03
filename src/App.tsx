@@ -94,6 +94,10 @@ function App() {
     }
   }, []);
 
+  const clearLocalStorage = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
 
   return (
     <div className="w-screen h-screen bg-surface1 select-none font-quicksand overflow-hidden">
@@ -144,6 +148,14 @@ function App() {
           bg-neutral-800/50 hover:bg-black transition-colors
           rounded-full p-2 cursor-pointer"
         onClick={toggleEditMode}
+      >
+        <GoGear className="text-white" style={{ fontSize: "40px" }} />
+      </div>
+      <div
+        className="absolute bottom-3 right-[133px]
+          bg-neutral-800/50 hover:bg-black transition-colors
+          rounded-full p-2 cursor-pointer"
+        onClick={clearLocalStorage}
       >
         <GoGear className="text-white" style={{ fontSize: "40px" }} />
       </div>
