@@ -149,30 +149,27 @@ function App() {
         addSearchbarFunc={addSearchbarElement}
       />
 
-      <div
-        className="absolute bottom-3 right-3
-          bg-neutral-800/50 hover:bg-black transition-colors
-          rounded-full p-2 cursor-pointer"
+      <button
+        className={`absolute bottom-3 right-3
+          bg-neutral-800/50 hover:bg-black transition-all
+          rounded-full p-2 cursor-pointer
+          ${editMode ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
         onClick={toggleMenu}
+        disabled={editMode}
       >
-        <GoGear className="text-white" style={{ fontSize: "40px" }} />
-      </div>
-      <div
-        className="absolute bottom-3 right-[73px]
-          bg-neutral-800/50 hover:bg-black transition-colors
-          rounded-full p-2 cursor-pointer"
+        <GoGear className="text-white" style={{ fontSize: "35px" }} />
+      </button>
+      <button
+        className={`absolute bottom-3 right-3
+          bg-neutral-800/50 hover:bg-black transition-all
+          rounded-full p-2 pl-3 cursor-pointer
+          text-white text-base
+          ${!editMode ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
         onClick={toggleEditMode}
+        disabled={!editMode}
       >
-        <GoGear className="text-white" style={{ fontSize: "40px" }} />
-      </div>
-      <div
-        className="absolute bottom-3 right-[133px]
-          bg-neutral-800/50 hover:bg-black transition-colors
-          rounded-full p-2 cursor-pointer"
-        onClick={clearLocalStorage}
-      >
-        <GoGear className="text-white" style={{ fontSize: "40px" }} />
-      </div>
+        Save Widgets
+      </button>
     </div>
   );
 }
