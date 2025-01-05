@@ -3,11 +3,19 @@ import MenuWidgets from "./MenuWidgets";
 
 interface MenuProps {
   visible: boolean;
+  restoreDefaultFunc: () => void;
+  editWidgetsFunc: () => void;
   addMessageFunc: () => void;
   addSearchbarFunc: () => void;
 }
 
-const Menu = ({ visible, addMessageFunc, addSearchbarFunc }: MenuProps) => {
+const Menu = ({
+  visible,
+  restoreDefaultFunc,
+  editWidgetsFunc,
+  addMessageFunc,
+  addSearchbarFunc
+}: MenuProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = ["Widgets", "Settings", "Wallpaper"];
@@ -25,12 +33,13 @@ const Menu = ({ visible, addMessageFunc, addSearchbarFunc }: MenuProps) => {
         flex flex-col
         ${visible ? "opacity-100 visible" : "opacity-0 invisible"}`}
     >
-      <div className="flex w-full justify-center">
-        <div className="grid grid-flow-col grid-cols-3 h-10 w-1/3">
+      <div className="flex w-full justify-between items-center">
+        <button onClick={restoreDefaultFunc}>Restore Default</button>
+        <div className="grid grid-flow-col -translate-x-3 grid-cols-3 h-10 w-1/3">
           {tabs.map((tab, index) => (
             <button
               key={index}
-              className={`py-2 transition-all rounded-t-lg -mb-[1px]
+              className={`py-2 rounded-t-lg -mb-[1px]
                 ${activeTab === index ? "bg-neutral-800/50" : "bg-neutral-900/90"}`}
               onClick={() => setActiveTab(index)}
             >
@@ -38,6 +47,7 @@ const Menu = ({ visible, addMessageFunc, addSearchbarFunc }: MenuProps) => {
             </button>
           ))}
         </div>
+        <button onClick={editWidgetsFunc}>Edit Widgets</button>
       </div>
 
       <div className="flex-grow p-4 bg-neutral-800/50 rounded-lg">{tabContent[activeTab]}</div>

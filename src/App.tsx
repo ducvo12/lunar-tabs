@@ -143,6 +143,8 @@ function App() {
 
       <Menu
         visible={menuVisible}
+        restoreDefaultFunc={clearLocalStorage}
+        editWidgetsFunc={toggleEditMode}
         addMessageFunc={addMessageElement}
         addSearchbarFunc={addSearchbarElement}
       />
