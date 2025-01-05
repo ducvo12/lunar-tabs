@@ -33,13 +33,13 @@ const Menu = ({
         flex flex-col
         ${visible ? "opacity-100 visible" : "opacity-0 invisible"}`}
     >
-      <div className="flex w-full justify-between items-center">
+      <div className="flex w-full justify-between items-center text-lg">
         <button onClick={restoreDefaultFunc}>Restore Default</button>
         <div className="grid grid-flow-col -translate-x-3 grid-cols-3 h-10 w-1/3">
           {tabs.map((tab, index) => (
             <button
               key={index}
-              className={`py-2 rounded-t-lg -mb-[1px]
+              className={`rounded-t-lg
                 ${activeTab === index ? "bg-neutral-800/50" : "bg-neutral-900/90"}`}
               onClick={() => setActiveTab(index)}
             >
