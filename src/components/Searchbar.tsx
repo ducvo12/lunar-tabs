@@ -53,7 +53,8 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: Searchbar
         ref={divRef}
         className={`absolute group outline-none
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
-          transition-[outline]`}
+          transition-[outline]
+          z-1 hover:z-10`}
       >
         <form action="https://www.google.com/search" method="GET">
           <input
