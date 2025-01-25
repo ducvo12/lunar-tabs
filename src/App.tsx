@@ -4,6 +4,7 @@ import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
 import { v4 as uuidv4 } from "uuid";
+import Weather from "./components/Weather";
 
 /*
 things to add:
@@ -81,7 +82,22 @@ function App() {
     );
   };
 
+  const [weatherElement, setWeatherElement] = useState<{ id: string; x: number; y: number }[]>([]);
+  const addWeatherElement = (
+    x: number = window.innerWidth / 2,
+    y: number = window.innerHeight / 2
+  ) => {
+    const newWeatherElement = {
+      id: uuidv4(),
+      x: x,
+      y: y
+    };
+    setWeatherElement([...weatherElement, newWeatherElement]);
+  };
+
   useEffect(() => {
+    addWeatherElement(window.innerWidth / 2, window.innerHeight / 2 + 80);
+
     const savedMessageElements = localStorage.getItem("messageElements");
     const savedSearchbarElements = localStorage.getItem("searchbarElements");
 
@@ -128,7 +144,6 @@ function App() {
           updateFunc={updateMessageElementInfo}
         />
       ))}
-
       {searchbarElements.map((element) => (
         <Searchbar
           key={element.id}
@@ -139,6 +154,9 @@ function App() {
           removeFunc={removeSearchbarElement}
           updateFunc={updateSearchbarElementInfo}
         />
+      ))}
+      {weatherElement.map(() => (
+        <Weather />
       ))}
 
       <Menu
