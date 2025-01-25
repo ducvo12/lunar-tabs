@@ -82,7 +82,7 @@ function App() {
     );
   };
 
-  const [weatherElement, setWeatherElement] = useState<{ id: string; x: number; y: number }[]>([]);
+  const [weatherElements, setWeatherElement] = useState<{ id: string; x: number; y: number }[]>([]);
   const addWeatherElement = (
     x: number = window.innerWidth / 2,
     y: number = window.innerHeight / 2
@@ -92,7 +92,11 @@ function App() {
       x: x,
       y: y
     };
-    setWeatherElement([...weatherElement, newWeatherElement]);
+    setWeatherElement([...weatherElements, newWeatherElement]);
+  };
+  const removeWeatherElement = (id: string) => {
+    const newWeatherElement = weatherElements.filter((element) => element.id !== id);
+    setMessageElements(newWeatherElement);
   };
 
   useEffect(() => {
@@ -155,7 +159,7 @@ function App() {
           updateFunc={updateSearchbarElementInfo}
         />
       ))}
-      {weatherElement.map(() => (
+      {weatherElements.map(() => (
         <Weather />
       ))}
 
