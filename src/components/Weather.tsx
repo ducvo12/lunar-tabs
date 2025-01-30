@@ -31,8 +31,8 @@ const Weather = () => {
       if (!weatherResponse.ok) {
         throw new Error("Failed to fetch weather data");
       }
-      const weatgerData = await weatherResponse.json();
-      setWeather(weatgerData.current_weather);
+      const weatherData = await weatherResponse.json();
+      setWeather(weatherData.current_weather);
 
       const rainResponse = await fetch(rainApiUrl);
       if (!rainResponse.ok) {
