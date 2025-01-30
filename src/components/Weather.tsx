@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Draggable from "react-draggable";
+import { FaCloudRain } from "react-icons/fa";
+import { FaWind } from "react-icons/fa";
 
 type CurrentWeatherData = {
   temperature: number;
@@ -8,9 +10,13 @@ type CurrentWeatherData = {
   weathercode: number;
 };
 
-type WindData = {
-  time: string[];
-  precipitation: number[];
+const formatTime12Hour = (isoTime: string): string => {
+  const date = new Date(isoTime);
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12; // Convert 0 (midnight) and 12 (noon) correctly
+  return `${hours}:${minutes} ${ampm}`;
 };
 
 const Weather = () => {
@@ -21,10 +27,10 @@ const Weather = () => {
     const latitude = 42.18979;
     const longitude = -87.90838;
 
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit&wind_speed_unit=mph`;
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit&wind_speed_unit=mph&models=gfs_seamless`;
 
     const currentDate = new Date().toISOString().split("T")[0];
-    const rainApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=precipitation&timezone=auto&start_date=${currentDate}&end_date=${currentDate}`;
+    const rainApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=precipitation&timezone=auto&start_date=${currentDate}&end_date=${currentDate}&models=gfs_seamless`;
 
     try {
       const weatherResponse = await fetch(weatherApiUrl);
@@ -43,7 +49,7 @@ const Weather = () => {
       const firstRainIndex = precipitation.findIndex((value: number) => value > 0);
 
       if (firstRainIndex !== -1) {
-        setRainStartTime(time[firstRainIndex]);
+        setRainStartTime(formatTime12Hour(time[firstRainIndex]));
       } else {
         setRainStartTime("No Rain");
       }
@@ -100,15 +106,20 @@ const Weather = () => {
         {weather ? (
           <div className="">
             <p>{weather.temperature}°F</p>
-            <p>{weather.windspeed} Mph Winds</p>
+            <p className="flex items-center justify-end gap-1">
+              {weather.windspeed} Mph <FaWind />
+            </p>
           </div>
         ) : (
           <div className="">Loading...</div>
         )}
         {weather ? (
-          <div className=" text-right">
+          <div className="w-52 text-right">
             <p>{getWeatherDescription(weather.weathercode)}</p>
-            <p>{rainStartTime}</p>
+            <p className="flex items-center justify-end gap-1">
+              <FaCloudRain />
+              {rainStartTime}
+            </p>
           </div>
         ) : (
           <div className="">Loading...</div>
