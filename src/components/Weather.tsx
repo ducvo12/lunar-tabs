@@ -1,30 +1,53 @@
 import { useEffect, useState } from "react";
 import Draggable from "react-draggable";
 
-type WeatherData = {
+type CurrentWeatherData = {
   temperature: number;
   windspeed: number;
   winddirection: number;
   weathercode: number;
 };
 
+type WindData = {
+  time: string[];
+  precipitation: number[];
+};
+
 const Weather = () => {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState<CurrentWeatherData | null>(null);
+  const [rainStartTime, setRainStartTime] = useState<string | null>(null);
 
   const fetchWeather = async () => {
     const latitude = 42.18979;
     const longitude = -87.90838;
-    const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`;
+
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit&wind_speed_unit=mph`;
+
+    const currentDate = new Date().toISOString().split("T")[0];
+    const rainApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=precipitation&timezone=auto&start_date=${currentDate}&end_date=${currentDate}`;
 
     try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
+      const weatherResponse = await fetch(weatherApiUrl);
+      if (!weatherResponse.ok) {
         throw new Error("Failed to fetch weather data");
       }
-      const data = await response.json();
-      setWeather(data.current_weather);
+      const weatgerData = await weatherResponse.json();
+      setWeather(weatgerData.current_weather);
+
+      const rainResponse = await fetch(rainApiUrl);
+      if (!rainResponse.ok) {
+        throw new Error("Failed to fetch rain data");
+      }
+      const rainData = await rainResponse.json();
+      const { time, precipitation } = rainData.hourly;
+      const firstRainIndex = precipitation.findIndex((value: number) => value > 0);
+
+      if (firstRainIndex !== -1) {
+        setRainStartTime(time[firstRainIndex]);
+      } else {
+        setRainStartTime("No Rain");
+      }
     } catch (err: unknown) {
-      setWeather(null);
       throw new Error(err as string);
     }
   };
@@ -72,15 +95,23 @@ const Weather = () => {
       <div
         className="flex items-center justify-between
           w-96 h-24 bg-neutral-900/90
-          rounded-xl p-5 text-white"
+          rounded-xl p-5 text-white text-[22px]"
       >
         {weather ? (
-          <div className="text-2xl">
+          <div className="">
             <p>{weather.temperature}°F</p>
-            <p>{getWeatherDescription(weather.weathercode)}</p>
+            <p>{weather.windspeed} Mph Winds</p>
           </div>
         ) : (
-          <div className="text-2xl">Loading...</div>
+          <div className="">Loading...</div>
+        )}
+        {weather ? (
+          <div className=" text-right">
+            <p>{getWeatherDescription(weather.weathercode)}</p>
+            <p>{rainStartTime}</p>
+          </div>
+        ) : (
+          <div className="">Loading...</div>
         )}
       </div>
     </Draggable>
