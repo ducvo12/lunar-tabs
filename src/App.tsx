@@ -3,7 +3,6 @@ import Message from "./components/Message";
 import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
-import { v4 as uuidv4 } from "uuid";
 import Weather from "./components/Weather";
 
 /*
@@ -15,6 +14,7 @@ stocks
 news
 twitter posts?
 */
+const generateId = () => `id-${Date.now()}`;
 
 function App() {
   const dataInitializedRef = useRef(false);
@@ -42,7 +42,7 @@ function App() {
     y: number = window.innerHeight / 2
   ) => {
     const newMessageElement = {
-      id: uuidv4(),
+      id: generateId(),
       x: x - 125,
       y: y - 35
     };
@@ -66,7 +66,7 @@ function App() {
     y: number = window.innerHeight / 2
   ) => {
     const newSearchbarElement = {
-      id: uuidv4(),
+      id: generateId(),
       x: x - 350,
       y: y - 25
     };
@@ -88,7 +88,7 @@ function App() {
     y: number = window.innerHeight / 2
   ) => {
     const newWeatherElement = {
-      id: uuidv4(),
+      id: generateId(),
       x: x,
       y: y
     };
@@ -169,6 +169,7 @@ function App() {
         editWidgetsFunc={toggleEditMode}
         addMessageFunc={addMessageElement}
         addSearchbarFunc={addSearchbarElement}
+        addWeatherFunc={addWeatherElement}
       />
 
       <button

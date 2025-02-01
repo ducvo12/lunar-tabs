@@ -51,7 +51,7 @@ const Message = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: MessageProp
     >
       <div
         ref={divRef}
-        className={`absolute group
+        className={`absolute group rounded-[1px]
           text-6xl text-text text-center outline-none
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline]

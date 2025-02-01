@@ -51,7 +51,7 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: Searchbar
     >
       <div
         ref={divRef}
-        className={`absolute group outline-none
+        className={`absolute group outline-none rounded-[1px]
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline]
           z-1 hover:z-10`}

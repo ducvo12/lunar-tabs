@@ -100,31 +100,38 @@ const Weather = () => {
   return (
     <Draggable defaultPosition={{ x: 100, y: 100 }}>
       <div
-        className="flex items-center justify-between
+        className={`absolute group outline-none rounded-[1px]
+          hover:outline hover:outline-2 hover:outline-white
+          transition-[outline]
+          z-1 hover:z-10`}
+      >
+        <div
+          className="flex items-center justify-between
           w-96 h-24 bg-neutral-900/90
           rounded-xl p-5 text-white text-[22px]"
-      >
-        {weather ? (
-          <div className="">
-            <p>{weather.temperature}°F</p>
-            <p className="flex items-center justify-end gap-1">
-              {weather.windspeed} Mph <FaWind />
-            </p>
-          </div>
-        ) : (
-          <div className="">Loading...</div>
-        )}
-        {weather ? (
-          <div className="w-52 text-right">
-            <p>{getWeatherDescription(weather.weathercode)}</p>
-            <p className="flex items-center justify-end gap-1">
-              {rainStartTime === "No Rain" ? <FaCloudSun /> : <FaCloudRain />}
-              {rainStartTime}
-            </p>
-          </div>
-        ) : (
-          <div className="">Loading...</div>
-        )}
+        >
+          {weather ? (
+            <div className="">
+              <p>{weather.temperature}°F</p>
+              <p className="flex items-center justify-end gap-1">
+                {weather.windspeed} Mph <FaWind />
+              </p>
+            </div>
+          ) : (
+            <div className="">Loading...</div>
+          )}
+          {weather ? (
+            <div className="w-52 text-right">
+              <p>{getWeatherDescription(weather.weathercode)}</p>
+              <p className="flex items-center justify-end gap-1">
+                {rainStartTime === "No Rain" ? <FaCloudSun /> : <FaCloudRain />}
+                {rainStartTime}
+              </p>
+            </div>
+          ) : (
+            <div className="">Loading...</div>
+          )}
+        </div>
       </div>
     </Draggable>
   );

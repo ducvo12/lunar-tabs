@@ -7,6 +7,7 @@ interface MenuProps {
   editWidgetsFunc: () => void;
   addMessageFunc: () => void;
   addSearchbarFunc: () => void;
+  addWeatherFunc: () => void;
 }
 
 const Menu = ({
@@ -14,13 +15,18 @@ const Menu = ({
   restoreDefaultFunc,
   editWidgetsFunc,
   addMessageFunc,
-  addSearchbarFunc
+  addSearchbarFunc,
+  addWeatherFunc
 }: MenuProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = ["Widgets", "Settings", "Wallpaper"];
   const tabContent = [
-    <MenuWidgets addMessageFunc={addMessageFunc} addSearchbarFunc={addSearchbarFunc} />,
+    <MenuWidgets
+      addMessageFunc={addMessageFunc}
+      addSearchbarFunc={addSearchbarFunc}
+      addWeatherFunc={addWeatherFunc}
+    />,
     <div>Content for Tab 2</div>,
     <div>Content for Tab 3</div>
   ];
