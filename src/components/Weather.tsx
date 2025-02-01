@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Draggable from "react-draggable";
 import { FaCloudRain } from "react-icons/fa";
 import { FaWind } from "react-icons/fa";
+import { FaCloudSun } from "react-icons/fa";
 
 type CurrentWeatherData = {
   temperature: number;
@@ -117,7 +118,7 @@ const Weather = () => {
           <div className="w-52 text-right">
             <p>{getWeatherDescription(weather.weathercode)}</p>
             <p className="flex items-center justify-end gap-1">
-              <FaCloudRain />
+              {rainStartTime === "No Rain" ? <FaCloudSun /> : <FaCloudRain />}
               {rainStartTime}
             </p>
           </div>
