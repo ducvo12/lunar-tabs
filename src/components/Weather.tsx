@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { FaCloudRain } from "react-icons/fa";
 import { FaWind } from "react-icons/fa";
 import { FaCloudSun } from "react-icons/fa";
+import { GoX } from "react-icons/go";
 
 type CurrentWeatherData = {
   temperature: number;
@@ -58,7 +59,6 @@ const Weather = () => {
       throw new Error(err as string);
     }
   };
-
   const getWeatherDescription = (code: number): string => {
     const weatherCodes: { [key: number]: string } = {
       0: "Clear sky",
@@ -93,13 +93,44 @@ const Weather = () => {
     return weatherCodes[code] || "Unknown";
   };
 
+  const divRef = useRef<HTMLDivElement>(null);
+  const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
+
+  const updateCirclePosition = () => {
+    if (divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      const screenCenterX = window.innerWidth / 2;
+      const screenCenterY = window.innerHeight / 2;
+
+      setCirclePosition({
+        top: rect.top + rect.height / 2 < screenCenterY,
+        left: rect.left + rect.width / 2 < screenCenterX
+      });
+    }
+  };
+  const handleStop = (data: { x: number; y: number }) => {
+    updateCirclePosition();
+    //updateFunc(id, data.x, data.y);
+  };
+
   useEffect(() => {
     fetchWeather();
+    updateCirclePosition();
+    window.addEventListener("resize", updateCirclePosition);
+    return () => {
+      window.removeEventListener("resize", updateCirclePosition);
+    };
   }, []);
 
   return (
-    <Draggable defaultPosition={{ x: 100, y: 100 }}>
+    <Draggable
+      defaultPosition={{ x: 100, y: 100 }}
+      bounds="parent"
+      onDrag={updateCirclePosition}
+      onStop={(_, data) => handleStop(data)}
+    >
       <div
+        ref={divRef}
         className={`absolute group outline-none rounded-[1px]
           hover:outline hover:outline-2 hover:outline-white
           transition-[outline]
@@ -131,6 +162,15 @@ const Weather = () => {
           ) : (
             <div className="">Loading...</div>
           )}
+        </div>
+        <div>
+          <GoX
+            className={`absolute text-xl rounded-full
+              bg-white text-black
+              opacity-0 group-hover:opacity-100 transition-opacity
+              ${circlePosition.top ? "-bottom-3" : "-top-3"}
+              ${circlePosition.left ? "-right-3" : "-left-3"}`}
+          ></GoX>
         </div>
       </div>
     </Draggable>
