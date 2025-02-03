@@ -176,7 +176,7 @@ function App() {
       />
 
       <button
-        className={`absolute bottom-3 right-3
+        className={`absolute bottom-3 right-3 z-20
           bg-neutral-800/50 hover:bg-black transition-all
           rounded-full p-2 cursor-pointer
           ${editMode ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
@@ -186,7 +186,7 @@ function App() {
         <GoGear className="text-white" style={{ fontSize: "35px" }} />
       </button>
       <button
-        className={`absolute bottom-3 right-3
+        className={`absolute bottom-3 right-3 z-20
           bg-neutral-800/50 hover:bg-black transition-all
           rounded-full p-2 pl-3 cursor-pointer
           text-white text-base

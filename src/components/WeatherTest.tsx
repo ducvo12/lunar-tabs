@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import Draggable from "react-draggable";
+import { FaTemperatureHigh } from "react-icons/fa";
+import { FaCloudSunRain } from "react-icons/fa";
+import { FaWind } from "react-icons/fa";
 
 const formatTime12Hour = (isoTime: string): string => {
   const date = new Date(isoTime);
@@ -65,7 +69,7 @@ const WeatherTest = () => {
           const time = formatTime12Hour(firstOccurrence.startTime);
           setPrecipitation(`${firstOccurrence.shortForecast} at ${time}`);
         } else {
-          setPrecipitation("No precipitation");
+          setPrecipitation("No Precipitation");
         }
       }
     } catch (err) {
@@ -78,18 +82,39 @@ const WeatherTest = () => {
   }, []);
 
   return (
-    <div className="text-white">
-      <h1 className="text-white">Current Weather</h1>
-      {error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <div>
-          <p>{temperature}°F</p>
-          <p>{precipitation}</p>
-          <p>{windSpeed} Winds</p>
+    <Draggable defaultPosition={{ x: 100, y: 100 }} bounds="parent">
+      <div
+        className={`absolute group outline-none rounded-[1px]
+      hover:outline hover:outline-2 hover:outline-white
+      transition-[outline]
+      z-1 hover:z-10`}
+      >
+        <div
+          className="flex items-center justify-between
+          w-auto h-auto bg-neutral-900/90
+          rounded-xl p-5 text-white text-[22px]"
+        >
+          {error ? (
+            <p>Error: {error}</p>
+          ) : (
+            <div>
+              <p className="flex items-center justify-start gap-2">
+                <FaTemperatureHigh />
+                {temperature}°F
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaCloudSunRain />
+                {precipitation}
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaWind />
+                {windSpeed} Winds
+              </p>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </Draggable>
   );
 };
 
