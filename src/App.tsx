@@ -4,6 +4,7 @@ import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
 import Weather from "./components/Weather";
+import WeatherTest from "./components/WeatherTest";
 
 /*
 things to add:
@@ -160,8 +161,10 @@ function App() {
         />
       ))}
       {weatherElements.map(() => (
-        <Weather />
+        <Weather canBeDragged={editMode} />
       ))}
+
+      <WeatherTest></WeatherTest>
 
       <Menu
         visible={menuVisible}

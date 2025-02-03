@@ -21,7 +21,16 @@ const formatTime12Hour = (isoTime: string): string => {
   return `${hours}:${minutes} ${ampm}`;
 };
 
-const Weather = () => {
+interface WeatherProps {
+  x: number;
+  y: number;
+  canBeDragged: boolean;
+  id: string;
+  removeFunc: (id: string) => void;
+  updateFunc: (id: string, x: number, y: number) => void;
+}
+
+const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProps) => {
   const [weather, setWeather] = useState<CurrentWeatherData | null>(null);
   const [rainStartTime, setRainStartTime] = useState<string | null>(null);
 
@@ -126,13 +135,14 @@ const Weather = () => {
     <Draggable
       defaultPosition={{ x: 100, y: 100 }}
       bounds="parent"
+      disabled={!canBeDragged}
       onDrag={updateCirclePosition}
       onStop={(_, data) => handleStop(data)}
     >
       <div
         ref={divRef}
         className={`absolute group outline-none rounded-[1px]
-          hover:outline hover:outline-2 hover:outline-white
+          ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline]
           z-1 hover:z-10`}
       >
@@ -163,7 +173,7 @@ const Weather = () => {
             <div className="">Loading...</div>
           )}
         </div>
-        <div>
+        <div hidden={!canBeDragged}>
           <GoX
             className={`absolute text-xl rounded-full
               bg-white text-black
