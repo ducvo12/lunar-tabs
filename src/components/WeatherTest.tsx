@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import Draggable from "react-draggable";
+
+// icons
+import { FaRegSun } from "react-icons/fa";
+import { FaRegMoon } from "react-icons/fa";
 import { FaTemperatureHigh } from "react-icons/fa";
-import { FaCloudSunRain } from "react-icons/fa";
+import { FaDroplet } from "react-icons/fa6";
 import { FaWind } from "react-icons/fa";
+import { FaRegCompass } from "react-icons/fa";
+import { FaCloud } from "react-icons/fa";
+import { FaCloudShowersHeavy } from "react-icons/fa";
 
 const formatTime12Hour = (isoTime: string): string => {
   const date = new Date(isoTime);
@@ -16,8 +23,6 @@ const formatTime12Hour = (isoTime: string): string => {
 const WeatherTest = () => {
   const [isDayTime, setIsDaytime] = useState<string>("Loading...");
   const [temperature, setTemperature] = useState<string>("Loading...");
-  const [precipitationProbability, setPrecipitationProbability] = useState<string>("Loading...");
-  const [dewpoint, setDewpoint] = useState<string>("Loading...");
   const [humidity, setHumidity] = useState<string>("Loading...");
   const [windSpeed, setWindSpeed] = useState<string>("Loading...");
   const [windDirection, setWindDirection] = useState<string>("Loading...");
@@ -45,10 +50,16 @@ const WeatherTest = () => {
       // current weather data
       {
         const currentWeather = weatherPeriods[0];
-        setIsDaytime(currentWeather.isDaytime);
+
+        // set isDaytime
+        if (currentWeather.isDaytime) {
+          setIsDaytime("Currently day");
+        } else {
+          setIsDaytime("Currently night");
+        }
+
+        // set other weather data
         setTemperature(currentWeather.temperature);
-        setPrecipitationProbability(currentWeather.probabilityOfPrecipitation.value + "%");
-        setDewpoint(parseFloat(currentWeather.dewpoint).toFixed(2) + "°");
         setHumidity(currentWeather.relativeHumidity.value);
         setWindSpeed(currentWeather.windSpeed);
         setWindDirection(currentWeather.windDirection);
@@ -69,7 +80,7 @@ const WeatherTest = () => {
           const time = formatTime12Hour(firstOccurrence.startTime);
           setPrecipitation(`${firstOccurrence.shortForecast} at ${time}`);
         } else {
-          setPrecipitation("No Precipitation");
+          setPrecipitation("No precipitation");
         }
       }
     } catch (err) {
@@ -99,16 +110,28 @@ const WeatherTest = () => {
           ) : (
             <div>
               <p className="flex items-center justify-start gap-2">
+                {isDayTime === "Currently Day" ? <FaRegSun /> : <FaRegMoon />}
+                {isDayTime}
+              </p>
+              <p className="flex items-center justify-start gap-2">
                 <FaTemperatureHigh />
                 {temperature}°F
               </p>
               <p className="flex items-center justify-start gap-2">
-                <FaCloudSunRain />
-                {precipitation}
+                <FaDroplet />
+                {humidity}% humidity
               </p>
               <p className="flex items-center justify-start gap-2">
                 <FaWind />
-                {windSpeed} Winds
+                {windSpeed} winds
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaRegCompass />
+                {windDirection} winds
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                {precipitation === "No Precipitation" ? <FaCloud /> : <FaCloudShowersHeavy />}
+                {precipitation}
               </p>
             </div>
           )}
