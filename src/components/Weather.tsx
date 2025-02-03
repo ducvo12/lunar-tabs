@@ -10,6 +10,7 @@ import { FaWind } from "react-icons/fa";
 import { FaRegCompass } from "react-icons/fa";
 import { FaCloud } from "react-icons/fa";
 import { FaCloudShowersHeavy } from "react-icons/fa";
+import { GoX } from "react-icons/go";
 const formatTime12Hour = (isoTime: string): string => {
   const date = new Date(isoTime);
   let hours = date.getHours();
@@ -31,6 +32,23 @@ interface WeatherProps {
 const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
+
+  const updateCirclePosition = () => {
+    if (divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      const screenCenterX = window.innerWidth / 2;
+      const screenCenterY = window.innerHeight / 2;
+
+      setCirclePosition({
+        top: rect.top + rect.height / 2 < screenCenterY,
+        left: rect.left + rect.width / 2 < screenCenterX
+      });
+    }
+  };
+  const handleStop = (data: { x: number; y: number }) => {
+    updateCirclePosition();
+    //updateFunc(id, data.x, data.y);
+  };
 
   const [isDayTime, setIsDaytime] = useState<string>("Loading...");
   const [temperature, setTemperature] = useState<string>("Loading...");
@@ -101,13 +119,25 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
 
   useEffect(() => {
     fetchWeather();
+
+    updateCirclePosition();
+    window.addEventListener("resize", updateCirclePosition);
+    return () => {
+      window.removeEventListener("resize", updateCirclePosition);
+    };
   }, []);
 
   return (
-    <Draggable defaultPosition={{ x: 100, y: 100 }} bounds="parent" disabled={!canBeDragged}>
+    <Draggable
+      defaultPosition={{ x: x, y: y }}
+      bounds="parent"
+      disabled={!canBeDragged}
+      onDrag={updateCirclePosition}
+      onStop={(_, data) => handleStop(data)}
+    >
       <div
         className={`absolute group outline-none rounded-[1px]
-          hover:outline hover:outline-2 hover:outline-white
+          ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline]
           z-1 hover:z-10`}
       >
@@ -147,6 +177,16 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
               </p>
             </div>
           )}
+        </div>
+        <div hidden={!canBeDragged}>
+          <GoX
+            onClick={() => removeFunc(id)}
+            className={`absolute text-xl rounded-full
+              bg-white text-black
+              opacity-0 group-hover:opacity-100 transition-opacity
+              ${circlePosition.top ? "-bottom-3" : "-top-3"}
+              ${circlePosition.left ? "-right-3" : "-left-3"}`}
+          ></GoX>
         </div>
       </div>
     </Draggable>
