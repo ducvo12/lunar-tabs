@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
-import { FaCloudRain } from "react-icons/fa";
+
+// icons
+import { FaRegSun } from "react-icons/fa";
+import { FaRegMoon } from "react-icons/fa";
+import { FaTemperatureHigh } from "react-icons/fa";
+import { FaDroplet } from "react-icons/fa6";
 import { FaWind } from "react-icons/fa";
-import { FaCloudSun } from "react-icons/fa";
-import { GoX } from "react-icons/go";
-
-type CurrentWeatherData = {
-  temperature: number;
-  windspeed: number;
-  winddirection: number;
-  weathercode: number;
-};
-
+import { FaRegCompass } from "react-icons/fa";
+import { FaCloud } from "react-icons/fa";
+import { FaCloudShowersHeavy } from "react-icons/fa";
 const formatTime12Hour = (isoTime: string): string => {
   const date = new Date(isoTime);
   let hours = date.getHours();
@@ -31,156 +29,124 @@ interface WeatherProps {
 }
 
 const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProps) => {
-  const [weather, setWeather] = useState<CurrentWeatherData | null>(null);
-  const [rainStartTime, setRainStartTime] = useState<string | null>(null);
-
-  const fetchWeather = async () => {
-    const latitude = 42.18979;
-    const longitude = -87.90838;
-
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit&wind_speed_unit=mph&models=gfs_seamless`;
-
-    const currentDate = new Date().toISOString().split("T")[0];
-    const rainApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=precipitation&timezone=auto&start_date=${currentDate}&end_date=${currentDate}&models=gfs_seamless`;
-
-    try {
-      const weatherResponse = await fetch(weatherApiUrl);
-      if (!weatherResponse.ok) {
-        throw new Error("Failed to fetch weather data");
-      }
-      const weatherData = await weatherResponse.json();
-      setWeather(weatherData.current_weather);
-
-      const rainResponse = await fetch(rainApiUrl);
-      if (!rainResponse.ok) {
-        throw new Error("Failed to fetch rain data");
-      }
-      const rainData = await rainResponse.json();
-      const { time, precipitation } = rainData.hourly;
-      const firstRainIndex = precipitation.findIndex((value: number) => value > 0);
-
-      if (firstRainIndex !== -1) {
-        setRainStartTime(formatTime12Hour(time[firstRainIndex]));
-      } else {
-        setRainStartTime("No Rain");
-      }
-    } catch (err: unknown) {
-      throw new Error(err as string);
-    }
-  };
-  const getWeatherDescription = (code: number): string => {
-    const weatherCodes: { [key: number]: string } = {
-      0: "Clear sky",
-      1: "Mainly clear",
-      2: "Partly cloudy",
-      3: "Overcast",
-      45: "Fog",
-      48: "Depositing rime fog",
-      51: "Light drizzle",
-      53: "Moderate drizzle",
-      55: "Dense drizzle",
-      56: "Light freezing drizzle",
-      57: "Dense freezing drizzle",
-      61: "Slight rain",
-      63: "Moderate rain",
-      65: "Heavy rain",
-      66: "Light freezing rain",
-      67: "Heavy freezing rain",
-      71: "Slight snow fall",
-      73: "Moderate snow fall",
-      75: "Heavy snow fall",
-      77: "Snow grains",
-      80: "Slight rain showers",
-      81: "Moderate rain showers",
-      82: "Violent rain showers",
-      85: "Slight snow showers",
-      86: "Heavy snow showers",
-      95: "Thunderstorm",
-      96: "Thunderstorm with slight hail",
-      99: "Thunderstorm with heavy hail"
-    };
-    return weatherCodes[code] || "Unknown";
-  };
-
   const divRef = useRef<HTMLDivElement>(null);
   const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
 
-  const updateCirclePosition = () => {
-    if (divRef.current) {
-      const rect = divRef.current.getBoundingClientRect();
-      const screenCenterX = window.innerWidth / 2;
-      const screenCenterY = window.innerHeight / 2;
+  const [isDayTime, setIsDaytime] = useState<string>("Loading...");
+  const [temperature, setTemperature] = useState<string>("Loading...");
+  const [humidity, setHumidity] = useState<string>("Loading...");
+  const [windSpeed, setWindSpeed] = useState<string>("Loading...");
+  const [windDirection, setWindDirection] = useState<string>("Loading...");
+  const [precipitation, setPrecipitation] = useState<string>("Loading...");
+  const [error, setError] = useState<string | null>(null);
 
-      setCirclePosition({
-        top: rect.top + rect.height / 2 < screenCenterY,
-        left: rect.left + rect.width / 2 < screenCenterX
+  const fetchWeather = async () => {
+    try {
+      const lat = 42.18979;
+      const lon = -87.90838;
+      const pointResponse = await fetch(`https://api.weather.gov/points/${lat},${lon}`, {
+        headers: { "User-Agent": "MyWeatherApp (myemail@example.com)" }
       });
+      if (!pointResponse.ok) throw new Error("Failed to fetch location data");
+      const pointData = await pointResponse.json();
+      const { gridId, gridX, gridY } = pointData.properties;
+      const weatherResponse = await fetch(
+        `https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast/hourly`,
+        { headers: { "User-Agent": "MyWeatherApp (myemail@example.com)" } }
+      );
+      if (!weatherResponse.ok) throw new Error("Failed to fetch weather data");
+      const weatherData = await weatherResponse.json();
+      const weatherPeriods = weatherData.properties.periods;
+
+      // current weather data
+      {
+        const currentWeather = weatherPeriods[0];
+
+        // set isDaytime
+        if (currentWeather.isDaytime) {
+          setIsDaytime("Currently day");
+        } else {
+          setIsDaytime("Currently night");
+        }
+
+        // set other weather data
+        setTemperature(currentWeather.temperature);
+        setHumidity(currentWeather.relativeHumidity.value);
+        setWindSpeed(currentWeather.windSpeed);
+        setWindDirection(currentWeather.windDirection);
+      }
+
+      // precipitation data
+      {
+        const today = new Date().toISOString().split("T")[0];
+        const todayWeather = weatherPeriods.filter((period: { startTime: string }) => {
+          return period.startTime.startsWith(today);
+        });
+        const precipitationTerms =
+          /(?=.*likely)\b(rain|snow|showers|drizzle|thunderstorms|precipitation)\b/i;
+        const firstOccurrence = todayWeather.find((period: { shortForecast: string }) =>
+          precipitationTerms.test(period.shortForecast)
+        );
+        if (firstOccurrence) {
+          const time = formatTime12Hour(firstOccurrence.startTime);
+          setPrecipitation(`${firstOccurrence.shortForecast} at ${time}`);
+        } else {
+          setPrecipitation("No precipitation");
+        }
+      }
+    } catch (err) {
+      setError((err as Error).message);
     }
-  };
-  const handleStop = (data: { x: number; y: number }) => {
-    updateCirclePosition();
-    //updateFunc(id, data.x, data.y);
   };
 
   useEffect(() => {
     fetchWeather();
-    updateCirclePosition();
-    window.addEventListener("resize", updateCirclePosition);
-    return () => {
-      window.removeEventListener("resize", updateCirclePosition);
-    };
   }, []);
 
   return (
-    <Draggable
-      defaultPosition={{ x: 100, y: 100 }}
-      bounds="parent"
-      disabled={!canBeDragged}
-      onDrag={updateCirclePosition}
-      onStop={(_, data) => handleStop(data)}
-    >
+    <Draggable defaultPosition={{ x: 100, y: 100 }} bounds="parent" disabled={!canBeDragged}>
       <div
-        ref={divRef}
         className={`absolute group outline-none rounded-[1px]
-          ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
+          hover:outline hover:outline-2 hover:outline-white
           transition-[outline]
           z-1 hover:z-10`}
       >
         <div
+          ref={divRef}
           className="flex items-center justify-between
-          w-96 h-24 bg-neutral-900/90
-          rounded-xl p-5 text-white text-[22px]"
+            w-auto h-auto bg-neutral-900/90
+            rounded-xl p-5 text-white text-[22px]"
         >
-          {weather ? (
-            <div className="">
-              <p>{weather.temperature}°F</p>
-              <p className="flex items-center justify-end gap-1">
-                {weather.windspeed} Mph <FaWind />
+          {error ? (
+            <p>Error: {error}</p>
+          ) : (
+            <div>
+              <p className="flex items-center justify-start gap-2">
+                {isDayTime === "Currently Day" ? <FaRegSun /> : <FaRegMoon />}
+                {isDayTime}
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaTemperatureHigh />
+                {temperature}°F
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaDroplet />
+                {humidity}% humidity
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaWind />
+                {windSpeed} winds
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                <FaRegCompass />
+                {windDirection} winds
+              </p>
+              <p className="flex items-center justify-start gap-2">
+                {precipitation === "No Precipitation" ? <FaCloud /> : <FaCloudShowersHeavy />}
+                {precipitation}
               </p>
             </div>
-          ) : (
-            <div className="">Loading...</div>
           )}
-          {weather ? (
-            <div className="w-52 text-right">
-              <p>{getWeatherDescription(weather.weathercode)}</p>
-              <p className="flex items-center justify-end gap-1">
-                {rainStartTime === "No Rain" ? <FaCloudSun /> : <FaCloudRain />}
-                {rainStartTime}
-              </p>
-            </div>
-          ) : (
-            <div className="">Loading...</div>
-          )}
-        </div>
-        <div hidden={!canBeDragged}>
-          <GoX
-            className={`absolute text-xl rounded-full
-              bg-white text-black
-              opacity-0 group-hover:opacity-100 transition-opacity
-              ${circlePosition.top ? "-bottom-3" : "-top-3"}
-              ${circlePosition.left ? "-right-3" : "-left-3"}`}
-          ></GoX>
         </div>
       </div>
     </Draggable>
