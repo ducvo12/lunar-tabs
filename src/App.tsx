@@ -1,9 +1,12 @@
 import { useEffect, useState, useRef } from "react";
-import Message from "./components/Message";
-import Searchbar from "./components/Searchbar";
+
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
+
+import Message from "./components/Message";
+import Searchbar from "./components/Searchbar";
 import Weather from "./components/Weather";
+
 import useMessageElement from "./Hooks/useMessageElement";
 import useSearchElement from "./Hooks/useSearchElement";
 import useWeatherElement from "./Hooks/useWeatherElement";
