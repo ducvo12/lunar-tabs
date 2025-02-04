@@ -4,7 +4,6 @@ import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
 import Weather from "./components/Weather";
-import WeatherTest from "./components/WeatherTest";
 
 /*
 things to add:
