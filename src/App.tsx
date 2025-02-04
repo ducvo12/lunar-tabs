@@ -8,12 +8,13 @@ import WeatherTest from "./components/WeatherTest";
 
 /*
 things to add:
-weather
+wallpaper
 time
 calendar
 stocks
 news
 twitter posts?
+settings for each widget
 */
 const generateId = () => `id-${Date.now()}`;
 
@@ -44,8 +45,8 @@ function App() {
   ) => {
     const newMessageElement = {
       id: generateId(),
-      x: x - 125,
-      y: y - 35
+      x: x,
+      y: y
     };
     setMessageElements([...messageElements, newMessageElement]);
   };
@@ -68,14 +69,14 @@ function App() {
   ) => {
     const newSearchbarElement = {
       id: generateId(),
-      x: x - 350,
-      y: y - 25
+      x: x,
+      y: y
     };
     setSearchbarElements([...searchbarElements, newSearchbarElement]);
   };
   const removeSearchbarElement = (id: string) => {
     const newSearchbarElement = searchbarElements.filter((element) => element.id !== id);
-    setMessageElements(newSearchbarElement);
+    setSearchbarElements(newSearchbarElement);
   };
   const updateSearchbarElementInfo = (id: string, x: number, y: number) => {
     setSearchbarElements((prev) =>
@@ -83,7 +84,9 @@ function App() {
     );
   };
 
-  const [weatherElements, setWeatherElement] = useState<{ id: string; x: number; y: number }[]>([]);
+  const [weatherElements, setWeatherElements] = useState<{ id: string; x: number; y: number }[]>(
+    []
+  );
   const addWeatherElement = (
     x: number = window.innerWidth / 2,
     y: number = window.innerHeight / 2
@@ -93,11 +96,16 @@ function App() {
       x: x,
       y: y
     };
-    setWeatherElement([...weatherElements, newWeatherElement]);
+    setWeatherElements([...weatherElements, newWeatherElement]);
   };
   const removeWeatherElement = (id: string) => {
     const newWeatherElement = weatherElements.filter((element) => element.id !== id);
-    setMessageElements(newWeatherElement);
+    setWeatherElements(newWeatherElement);
+  };
+  const updateWeatherElementInfo = (id: string, x: number, y: number) => {
+    setWeatherElements((prev) =>
+      prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
+    );
   };
 
   useEffect(() => {
@@ -105,26 +113,34 @@ function App() {
 
     const savedMessageElements = localStorage.getItem("messageElements");
     const savedSearchbarElements = localStorage.getItem("searchbarElements");
+    const savedWeatherElements = localStorage.getItem("weatherElements");
 
     if (!savedMessageElements && !savedSearchbarElements) {
+      // fresh load (no saved data)
       addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
       addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
     } else {
+      // load saved data
       setMessageElements(JSON.parse(savedMessageElements || "[]"));
       setSearchbarElements(JSON.parse(savedSearchbarElements || "[]"));
+      setWeatherElements(JSON.parse(savedWeatherElements || "[]"));
     }
     // check this out later!!
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
+    // save data to local storage
     if (!dataInitializedRef.current) {
+      // prevent saving data on first render
       dataInitializedRef.current = true;
     } else {
+      // save data every time deps change
       localStorage.setItem("messageElements", JSON.stringify(messageElements));
       localStorage.setItem("searchbarElements", JSON.stringify(searchbarElements));
+      localStorage.setItem("weatherElements", JSON.stringify(weatherElements));
     }
-  }, [messageElements, searchbarElements]);
+  }, [messageElements, searchbarElements, weatherElements]);
 
   const clearLocalStorage = () => {
     localStorage.clear();
@@ -168,7 +184,7 @@ function App() {
           canBeDragged={editMode}
           id={element.id}
           removeFunc={removeWeatherElement}
-          updateFunc={updateSearchbarElementInfo}
+          updateFunc={updateWeatherElementInfo}
         />
       ))}
 

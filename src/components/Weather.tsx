@@ -47,7 +47,7 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
   };
   const handleStop = (data: { x: number; y: number }) => {
     updateCirclePosition();
-    //updateFunc(id, data.x, data.y);
+    updateFunc(id, data.x, data.y);
   };
 
   const [isDayTime, setIsDaytime] = useState<string>("Loading...");
