@@ -4,6 +4,9 @@ import Searchbar from "./components/Searchbar";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
 import Weather from "./components/Weather";
+import useMessageElement from "./Hooks/useMessageElement";
+import useSearchElement from "./Hooks/useSearchElement";
+import useWeatherElement from "./Hooks/useWeatherElement";
 
 /*
 things to add:
@@ -35,89 +38,38 @@ function App() {
     setEditMode(!editMode);
   };
 
-  const [messageElements, setMessageElements] = useState<{ id: string; x: number; y: number }[]>(
-    []
-  );
-  const addMessageElement = (
-    x: number = window.innerWidth / 2,
-    y: number = window.innerHeight / 2
-  ) => {
-    const newMessageElement = {
-      id: generateId(),
-      x: x,
-      y: y
-    };
-    setMessageElements([...messageElements, newMessageElement]);
-  };
-  const removeMessageElement = (id: string) => {
-    const newMessageElements = messageElements.filter((element) => element.id !== id);
-    setMessageElements(newMessageElements);
-  };
-  const updateMessageElementInfo = (id: string, x: number, y: number) => {
-    setMessageElements((prev) =>
-      prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
-    );
-  };
-
-  const [searchbarElements, setSearchbarElements] = useState<
-    { id: string; x: number; y: number }[]
-  >([]);
-  const addSearchbarElement = (
-    x: number = window.innerWidth / 2,
-    y: number = window.innerHeight / 2
-  ) => {
-    const newSearchbarElement = {
-      id: generateId(),
-      x: x,
-      y: y
-    };
-    setSearchbarElements([...searchbarElements, newSearchbarElement]);
-  };
-  const removeSearchbarElement = (id: string) => {
-    const newSearchbarElement = searchbarElements.filter((element) => element.id !== id);
-    setSearchbarElements(newSearchbarElement);
-  };
-  const updateSearchbarElementInfo = (id: string, x: number, y: number) => {
-    setSearchbarElements((prev) =>
-      prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
-    );
-  };
-
-  const [weatherElements, setWeatherElements] = useState<{ id: string; x: number; y: number }[]>(
-    []
-  );
-  const addWeatherElement = (
-    x: number = window.innerWidth / 2,
-    y: number = window.innerHeight / 2
-  ) => {
-    const newWeatherElement = {
-      id: generateId(),
-      x: x,
-      y: y
-    };
-    setWeatherElements([...weatherElements, newWeatherElement]);
-  };
-  const removeWeatherElement = (id: string) => {
-    const newWeatherElement = weatherElements.filter((element) => element.id !== id);
-    setWeatherElements(newWeatherElement);
-  };
-  const updateWeatherElementInfo = (id: string, x: number, y: number) => {
-    setWeatherElements((prev) =>
-      prev.map((element) => (element.id === id ? { ...element, x: x, y: y } : element))
-    );
-  };
+  const {
+    messageElements,
+    setMessageElements,
+    addMessageElement,
+    removeMessageElement,
+    updateMessageElementInfo
+  } = useMessageElement();
+  const {
+    searchbarElements,
+    setSearchbarElements,
+    addSearchbarElement,
+    removeSearchbarElement,
+    updateSearchbarElementInfo
+  } = useSearchElement();
+  const {
+    weatherElements,
+    setWeatherElements,
+    addWeatherElement,
+    removeWeatherElement,
+    updateWeatherElementInfo
+  } = useWeatherElement();
 
   useEffect(() => {
-    addWeatherElement(window.innerWidth / 2, window.innerHeight / 2 + 80);
-
     const savedMessageElements = localStorage.getItem("messageElements");
     const savedSearchbarElements = localStorage.getItem("searchbarElements");
     const savedWeatherElements = localStorage.getItem("weatherElements");
 
     if (!savedMessageElements && !savedSearchbarElements) {
       // fresh load (no saved data)
-      addMessageElement(window.innerWidth / 2, window.innerHeight / 2 - 30);
-      addSearchbarElement(window.innerWidth / 2, window.innerHeight / 2 + 25);
+      addMessageElement(window.innerWidth / 2 - 130, window.innerHeight / 2 - 54);
+      addSearchbarElement(window.innerWidth / 2 - 355, window.innerHeight / 2 + 6);
+      addWeatherElement(0, 0);
     } else {
       // load saved data
       setMessageElements(JSON.parse(savedMessageElements || "[]"));
