@@ -7,9 +7,9 @@ import Message from "./components/Message";
 import Searchbar from "./components/Searchbar";
 import Weather from "./components/Weather";
 
-import useMessageElement from "./Hooks/useMessageElement";
-import useSearchElement from "./Hooks/useSearchElement";
-import useWeatherElement from "./Hooks/useWeatherElement";
+import useMessageElement from "./hooks/useMessageElement";
+import useSearchElement from "./hooks/useSearchElement";
+import useWeatherElement from "./hooks/useWeatherElement";
 
 /*
 things to add:
