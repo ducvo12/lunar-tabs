@@ -18,7 +18,6 @@ news
 twitter posts?
 settings for each widget
 */
-const generateId = () => `id-${Date.now()}`;
 
 function App() {
   const dataInitializedRef = useRef(false);
