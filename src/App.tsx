@@ -11,6 +11,8 @@ import useMessageElement from "./hooks/useMessageElement";
 import useSearchElement from "./hooks/useSearchElement";
 import useWeatherElement from "./hooks/useWeatherElement";
 
+import bg from "./assets/wp3.jpg";
+
 /*
 things to add:
 wallpaper
@@ -101,7 +103,13 @@ function App() {
   };
 
   return (
-    <div className="w-screen h-screen bg-surface1 select-none font-quicksand overflow-hidden">
+    <div
+      className="w-screen h-screen select-none font-quicksand overflow-hidden"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: "cover"
+      }}
+    >
       <div className="hidden">
         <div className="absolute top-0 left-1/2 w-[2px] h-full bg-white"></div>
         <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white"></div>
