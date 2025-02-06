@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MenuWidgets from "./MenuWidgets";
+import MenuWallpaper from "./MenuWallpaper";
 
 interface MenuProps {
   visible: boolean;
@@ -28,7 +29,7 @@ const Menu = ({
       addWeatherFunc={addWeatherFunc}
     />,
     <div>Content for Tab 2</div>,
-    <div>Content for Tab 3</div>
+    <MenuWallpaper></MenuWallpaper>
   ];
 
   return (
@@ -46,7 +47,7 @@ const Menu = ({
             <button
               key={index}
               className={`rounded-t-lg
-                ${activeTab === index ? "bg-neutral-800/50" : "bg-neutral-900/90"}`}
+                ${activeTab === index ? "bg-neutral-900/60" : "bg-neutral-900/0"}`}
               onClick={() => setActiveTab(index)}
             >
               {tab}
@@ -56,7 +57,7 @@ const Menu = ({
         <button onClick={editWidgetsFunc}>Edit Widgets</button>
       </div>
 
-      <div className="flex-grow p-4 bg-neutral-800/50 rounded-lg">{tabContent[activeTab]}</div>
+      <div className="flex-grow p-4 bg-neutral-900/60 rounded-lg">{tabContent[activeTab]}</div>
     </div>
   );
 };
