@@ -1,9 +1,9 @@
-import React, { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent } from "react";
 
 // IndexedDB configuration
-const DB_NAME = "ImageDB";
+const DB_NAME = "WallpaperDB";
 const DB_VERSION = 1;
-const STORE_NAME = "images";
+const STORE_NAME = "wallpapers";
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -28,52 +28,50 @@ function openDB(): Promise<IDBDatabase> {
 
 function saveImageToIndexedDB(file: File): Promise<void> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = async () => {
-      try {
-        const dataUrl = reader.result as string;
-        const db = await openDB();
-
-        // Create the transaction after the file has been read.
+    openDB()
+      .then((db) => {
         const transaction = db.transaction(STORE_NAME, "readwrite");
         const store = transaction.objectStore(STORE_NAME);
-        const request = store.put({ id: "userImage", dataUrl });
+        const getRequest = store.get("wallpaperCollection");
 
-        // If the individual put request fails.
-        request.onerror = () => {
-          reject("Error saving image (request error).");
+        getRequest.onsuccess = () => {
+          // If the record doesn't exist, initialize it with an empty array.
+          let record = getRequest.result;
+          if (!record) {
+            record = { id: "wallpaperCollection", wallpapers: [] as Blob[] };
+          }
+
+          // Append the file (as a Blob) to the wallpapers array.
+          record.wallpapers.push(file);
+
+          const putRequest = store.put(record);
+          putRequest.onsuccess = () => resolve();
+          putRequest.onerror = () => reject("Error saving wallpaper.");
         };
 
-        // Wait for the entire transaction to complete.
-        transaction.oncomplete = () => {
-          resolve();
-        };
+        getRequest.onerror = () => reject("Error retrieving wallpaper collection.");
 
         transaction.onerror = () => {
           reject("Transaction error: " + transaction.error);
         };
-      } catch (error) {
+      })
+      .catch((error) => {
         reject(error);
-      }
-    };
-
-    reader.onerror = () => reject("Error reading file");
-    reader.readAsDataURL(file);
+      });
   });
 }
 
-function loadImageFromIndexedDB(): Promise<string | null> {
+function loadImageFromIndexedDB(): Promise<Blob | null> {
   return new Promise((resolve, reject) => {
     openDB()
       .then((db) => {
         const transaction = db.transaction(STORE_NAME, "readonly");
         const store = transaction.objectStore(STORE_NAME);
-        const request = store.get("userImage");
+        const request = store.get("wallpaperCollection");
 
         request.onsuccess = () => {
-          if (request.result) {
-            resolve(request.result.dataUrl);
+          if (request.result && request.result.wallpapers.length > 0) {
+            resolve(request.result.wallpapers[0]);
           } else {
             resolve(null);
           }
@@ -119,7 +117,7 @@ const MenuWallpaper = () => {
     try {
       const dataUrl = await loadImageFromIndexedDB();
       if (dataUrl) {
-        setImageDataUrl(dataUrl);
+        setImageDataUrl(URL.createObjectURL(dataUrl));
         setWallpaperStatus("Image loaded successfully!");
       } else {
         setWallpaperStatus("No image found.");
