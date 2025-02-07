@@ -8,5 +8,9 @@ export default defineConfig({
     outDir: "dist"
     // any other settings you might need
   },
-  plugins: [react()]
+  plugins: [react()],
+  server: {
+    host: "localhost",
+    port: 3000
+  }
 });
