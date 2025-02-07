@@ -1,13 +1,10 @@
 import React, { useState, ChangeEvent } from "react";
 
-// IndexedDB configuration constants.
+// IndexedDB configuration
 const DB_NAME = "ImageDB";
 const DB_VERSION = 1;
 const STORE_NAME = "images";
 
-/**
- * Opens (or creates) an IndexedDB database.
- */
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -29,12 +26,6 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-/**
- * Saves an image file to IndexedDB.
- *
- * This version waits for the FileReader to finish reading the file,
- * then creates a transaction and waits for the transaction to complete.
- */
 function saveImageToIndexedDB(file: File): Promise<void> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -72,9 +63,6 @@ function saveImageToIndexedDB(file: File): Promise<void> {
   });
 }
 
-/**
- * Loads the image data from IndexedDB.
- */
 function loadImageFromIndexedDB(): Promise<string | null> {
   return new Promise((resolve, reject) => {
     openDB()
@@ -103,7 +91,7 @@ const MenuWallpaper = () => {
   const [wallpaperName, setWallpaperName] = useState("No file selected");
   const [wallpaperStatus, setWallpaperStatus] = useState("\u00A0");
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setSelectedFile(event.target.files[0]);
       setWallpaperName(event.target.files[0].name);
