@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 
 // IndexedDB configuration
 const DB_NAME = "WallpaperDB";
@@ -61,7 +61,7 @@ function saveImageToIndexedDB(file: File): Promise<void> {
   });
 }
 
-function loadImageFromIndexedDB(): Promise<Blob | null> {
+function loadImageFromIndexedDB(): Promise<Blob[] | null> {
   return new Promise((resolve, reject) => {
     openDB()
       .then((db) => {
@@ -71,7 +71,7 @@ function loadImageFromIndexedDB(): Promise<Blob | null> {
 
         request.onsuccess = () => {
           if (request.result && request.result.wallpapers.length > 0) {
-            resolve(request.result.wallpapers[0]);
+            resolve(request.result.wallpapers);
           } else {
             resolve(null);
           }
@@ -85,7 +85,7 @@ function loadImageFromIndexedDB(): Promise<Blob | null> {
 
 const MenuWallpaper = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
   const [wallpaperName, setWallpaperName] = useState("No file selected");
   const [wallpaperStatus, setWallpaperStatus] = useState("\u00A0");
 
@@ -107,6 +107,7 @@ const MenuWallpaper = () => {
     try {
       await saveImageToIndexedDB(selectedFile);
       setWallpaperStatus("Image saved successfully!");
+      handleLoad();
     } catch (error) {
       setWallpaperStatus("Failed to save image.");
       console.error(error);
@@ -115,9 +116,10 @@ const MenuWallpaper = () => {
 
   const handleLoad = async () => {
     try {
-      const dataUrl = await loadImageFromIndexedDB();
-      if (dataUrl) {
-        setImageDataUrl(URL.createObjectURL(dataUrl));
+      const wallpapers = await loadImageFromIndexedDB();
+      if (wallpapers) {
+        const wallpaperURLs = wallpapers.map((wallpaper) => URL.createObjectURL(wallpaper));
+        setWallpaperDataUrls([...wallpaperURLs]);
         setWallpaperStatus("Image loaded successfully!");
       } else {
         setWallpaperStatus("No image found.");
@@ -127,6 +129,10 @@ const MenuWallpaper = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    handleLoad();
+  }, []);
 
   return (
     <div
@@ -170,15 +176,20 @@ const MenuWallpaper = () => {
           <div className="text-neutral-500">{wallpaperStatus}</div>
         </div>
 
-        <div className="h-full bg-neutral-900 p-2 pl-3 rounded-lg">
-          <button onClick={handleLoad} className="bg-white w-10 h-10"></button>
-          <div className="border border-gray-300 p-4">
-            {imageDataUrl ? (
-              <img src={imageDataUrl} alt="Loaded" className="max-w-full h-auto" />
-            ) : (
-              <p>No image loaded</p>
-            )}
-          </div>
+        <div className="h-full bg-neutral-900 p-2 rounded-lg grid grid-cols-3 grid-rows-4 gap-2">
+          {wallpaperDataUrls ? (
+            wallpaperDataUrls.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                alt="Wallpaper"
+                onClick={() => console.log("Wallpaper " + index + " clicked")}
+                className="w-full h-full object-contain rounded-lg border border-neutral-700"
+              />
+            ))
+          ) : (
+            <p>Cannot Load Wallpapers</p>
+          )}
         </div>
       </div>
 
