@@ -218,7 +218,7 @@ const MenuWallpaper = () => {
             wallpaperDataUrls.map((url, index) => (
               <div
                 key={index}
-                className="relative w-full h-full rounded-lg
+                className="group relative w-full h-full rounded-lg
                 border border-neutral-700 hover:border-neutral-300
                 transition-all
                 flex justify-center items-center"
@@ -226,12 +226,18 @@ const MenuWallpaper = () => {
                 <img
                   src={url}
                   alt="Wallpaper"
-                  onClick={() => handleDelete(index)}
                   className="object-contain rounded-lg
                   cursor-pointer"
                 />
-                <div className="absolute -right-1 -bottom-1 rounded-full h-4 w-4 bg-neutral-300">
-                  x
+                <div
+                  onClick={() => handleDelete(index)}
+                  className="absolute -right-1 -bottom-1
+                  rounded-full h-4 w-4
+                  bg-black/0 text-black
+                  group-hover:bg-neutral-300
+                  transition-all"
+                >
+                  <GoX></GoX>
                 </div>
               </div>
             ))
