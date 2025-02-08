@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, useEffect } from "react";
+import { GoX } from "react-icons/go";
 
 // IndexedDB configuration
 const DB_NAME = "WallpaperDB";
@@ -83,6 +84,32 @@ function loadImageFromIndexedDB(): Promise<Blob[] | null> {
   });
 }
 
+function removeImageFromIndexedDB(index: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    openDB()
+      .then((db) => {
+        const transaction = db.transaction(STORE_NAME, "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.get("wallpaperCollection");
+
+        request.onsuccess = () => {
+          const record = request.result;
+          if (!record || record.wallpapers.length === 0) {
+            resolve();
+          }
+
+          record.wallpapers.splice(index, 1);
+
+          const putRequest = store.put(record);
+          putRequest.onsuccess = () => resolve();
+          putRequest.onerror = () => reject("Error saving wallpaper.");
+        };
+        request.onerror = () => reject("Error deleting image");
+      })
+      .catch(reject);
+  });
+}
+
 const MenuWallpaper = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
@@ -126,6 +153,16 @@ const MenuWallpaper = () => {
       }
     } catch (error) {
       setWallpaperStatus("Failed to load image.");
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (index: number) => {
+    try {
+      await removeImageFromIndexedDB(index);
+      handleLoad();
+    } catch (error) {
+      setWallpaperStatus("Failed to delete image.");
       console.error(error);
     }
   };
@@ -179,13 +216,24 @@ const MenuWallpaper = () => {
         <div className="h-full bg-neutral-900 p-2 rounded-lg grid grid-cols-3 grid-rows-4 gap-2">
           {wallpaperDataUrls ? (
             wallpaperDataUrls.map((url, index) => (
-              <img
+              <div
                 key={index}
-                src={url}
-                alt="Wallpaper"
-                onClick={() => console.log("Wallpaper " + index + " clicked")}
-                className="w-full h-full object-contain rounded-lg border border-neutral-700"
-              />
+                className="relative w-full h-full rounded-lg
+                border border-neutral-700 hover:border-neutral-300
+                transition-all
+                flex justify-center items-center"
+              >
+                <img
+                  src={url}
+                  alt="Wallpaper"
+                  onClick={() => handleDelete(index)}
+                  className="object-contain rounded-lg
+                  cursor-pointer"
+                />
+                <div className="absolute -right-1 -bottom-1 rounded-full h-4 w-4 bg-neutral-300">
+                  x
+                </div>
+              </div>
             ))
           ) : (
             <p>Cannot Load Wallpapers</p>
