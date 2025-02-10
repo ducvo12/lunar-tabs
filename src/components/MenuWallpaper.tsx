@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect, useRef } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { GoX } from "react-icons/go";
 
 // IndexedDB configuration
@@ -112,10 +112,12 @@ function removeImageFromIndexedDB(index: number): Promise<void> {
 
 const MenuWallpaper = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
+
   const [wallpaperName, setWallpaperName] = useState("No file selected");
   const [wallpaperStatus, setWallpaperStatus] = useState("\u00A0");
-  const curWallpaperIndex = useRef(-1);
+
+  const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
+  const [curWallpaperIndex, setCurWallpaperIndex] = useState(-1);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -145,7 +147,7 @@ const MenuWallpaper = () => {
   const handleLoad = async () => {
     const ind = localStorage.getItem("curWallpaperIndex");
     if (ind) {
-      curWallpaperIndex.current = parseInt(ind);
+      setCurWallpaperIndex(parseInt(ind));
     }
 
     try {
@@ -167,11 +169,11 @@ const MenuWallpaper = () => {
   const handleDelete = async (index: number) => {
     try {
       await removeImageFromIndexedDB(index);
-      console.log(index, curWallpaperIndex.current);
-      if (index === curWallpaperIndex.current) {
+      console.log(index, curWallpaperIndex);
+      if (index === curWallpaperIndex) {
         setWallpaper(-1);
-      } else if (index < curWallpaperIndex.current) {
-        setWallpaper(curWallpaperIndex.current - 1);
+      } else if (index < curWallpaperIndex) {
+        setWallpaper(curWallpaperIndex - 1);
       }
       handleLoad();
     } catch (error) {
@@ -181,7 +183,7 @@ const MenuWallpaper = () => {
   };
 
   const setWallpaper = (index: number) => {
-    curWallpaperIndex.current = index;
+    setCurWallpaperIndex(index);
     localStorage.setItem("curWallpaperIndex", index.toString());
   };
 
@@ -235,9 +237,13 @@ const MenuWallpaper = () => {
           {wallpaperDataUrls ? (
             wallpaperDataUrls.map((url, index) => (
               <div
-                className="group relative w-full h-full rounded-lg
-                  border border-neutral-700 hover:border-neutral-300
-                  transition-all"
+                className={`group relative w-full h-full rounded-lg
+                  border transition-all
+                  ${
+                    index === curWallpaperIndex
+                      ? "border-white"
+                      : "border-neutral-700 hover:border-neutral-300"
+                  }`}
               >
                 <div
                   onClick={() => setWallpaper(index)}
