@@ -54,7 +54,7 @@ const Message = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: MessageProp
         className={`absolute group rounded-[1px]
           text-6xl text-text text-center outline-none
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
-          transition-[outline]
+          transition-[outline] shadow-xl
           z-1 hover:z-10`}
       >
         Welcome
