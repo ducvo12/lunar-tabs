@@ -147,7 +147,7 @@ const MenuWallpaper = () => {
   const handleLoad = async () => {
     const ind = localStorage.getItem("curWallpaperIndex");
     if (ind) {
-      setCurWallpaperIndex(parseInt(ind));
+      setWallpaper(parseInt(ind));
     }
 
     try {
@@ -189,6 +189,8 @@ const MenuWallpaper = () => {
 
   useEffect(() => {
     handleLoad();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

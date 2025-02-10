@@ -24,11 +24,60 @@ twitter posts?
 settings for each widget
 */
 
+const DB_NAME = "WallpaperDB";
+const DB_VERSION = 1;
+const STORE_NAME = "wallpapers";
+
+function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onerror = () => {
+      reject("Error opening database");
+    };
+
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    };
+  });
+}
+function loadWallpaperFromIndexedDB(index: number): Promise<Blob | null> {
+  return new Promise((resolve, reject) => {
+    openDB()
+      .then((db) => {
+        const transaction = db.transaction(STORE_NAME, "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.get("wallpaperCollection");
+
+        request.onsuccess = () => {
+          if (request.result && request.result.wallpapers.length > 0) {
+            resolve(request.result.wallpapers[index]);
+          } else {
+            resolve(null);
+          }
+        };
+
+        request.onerror = () => reject("Error loading image");
+      })
+      .catch(reject);
+  });
+}
+
 function App() {
   const dataInitializedRef = useRef(false);
 
   const [theme] = useState("dark");
   document.documentElement.classList.add(theme);
+
+  const [wallpaperIndex, setwallpaperIndex] = useState(-1);
+  const [wallpaperURL, setWallpaperURL] = useState<string | null>(null);
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -63,6 +112,34 @@ function App() {
     removeWeatherElement,
     updateWeatherElementInfo
   } = useWeatherElement();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newIndex = localStorage.getItem("curWallpaperIndex");
+      if (newIndex && parseInt(newIndex) !== wallpaperIndex) {
+        setwallpaperIndex(parseInt(newIndex));
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [wallpaperIndex]);
+
+  const getWallpaper = async (index: number) => {
+    try {
+      const wallpaper = await loadWallpaperFromIndexedDB(index);
+      if (wallpaper) {
+        setWallpaperURL(URL.createObjectURL(wallpaper));
+      } else {
+        setWallpaperURL(null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getWallpaper(wallpaperIndex);
+  }, [wallpaperIndex]);
 
   useEffect(() => {
     const savedMessageElements = localStorage.getItem("messageElements");
@@ -106,7 +183,7 @@ function App() {
     <div
       className="w-screen h-screen select-none font-quicksand overflow-hidden"
       style={{
-        backgroundImage: `url(${bg})`,
+        backgroundImage: `url(${wallpaperURL ? wallpaperURL : bg})`,
         backgroundSize: "cover"
       }}
     >
