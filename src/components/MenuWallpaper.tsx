@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { GoX } from "react-icons/go";
 
 // IndexedDB configuration
@@ -115,6 +115,7 @@ const MenuWallpaper = () => {
   const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
   const [wallpaperName, setWallpaperName] = useState("No file selected");
   const [wallpaperStatus, setWallpaperStatus] = useState("\u00A0");
+  const curWallpaperIndex = useRef(-1);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -142,6 +143,11 @@ const MenuWallpaper = () => {
   };
 
   const handleLoad = async () => {
+    const ind = localStorage.getItem("curWallpaperIndex");
+    if (ind) {
+      curWallpaperIndex.current = parseInt(ind);
+    }
+
     try {
       const wallpapers = await loadImageFromIndexedDB();
       if (wallpapers) {
@@ -150,6 +156,7 @@ const MenuWallpaper = () => {
         setWallpaperStatus("Image loaded successfully!");
       } else {
         setWallpaperStatus("No image found.");
+        setWallpaperDataUrls(null);
       }
     } catch (error) {
       setWallpaperStatus("Failed to load image.");
@@ -160,11 +167,22 @@ const MenuWallpaper = () => {
   const handleDelete = async (index: number) => {
     try {
       await removeImageFromIndexedDB(index);
+      console.log(index, curWallpaperIndex.current);
+      if (index === curWallpaperIndex.current) {
+        setWallpaper(-1);
+      } else if (index < curWallpaperIndex.current) {
+        setWallpaper(curWallpaperIndex.current - 1);
+      }
       handleLoad();
     } catch (error) {
       setWallpaperStatus("Failed to delete image.");
       console.error(error);
     }
+  };
+
+  const setWallpaper = (index: number) => {
+    curWallpaperIndex.current = index;
+    localStorage.setItem("curWallpaperIndex", index.toString());
   };
 
   useEffect(() => {
@@ -217,25 +235,30 @@ const MenuWallpaper = () => {
           {wallpaperDataUrls ? (
             wallpaperDataUrls.map((url, index) => (
               <div
-                key={index}
                 className="group relative w-full h-full rounded-lg
-                border border-neutral-700 hover:border-neutral-300
-                transition-all
-                flex justify-center items-center"
+                  border border-neutral-700 hover:border-neutral-300
+                  transition-all"
               >
-                <img
-                  src={url}
-                  alt="Wallpaper"
-                  className="object-contain rounded-lg
-                  cursor-pointer"
-                />
+                <div
+                  onClick={() => setWallpaper(index)}
+                  key={index}
+                  className="relative w-full h-full rounded-lg
+                    flex justify-center items-center"
+                >
+                  <img
+                    src={url}
+                    alt="Wallpaper"
+                    className="object-contain rounded-lg
+                      cursor-pointer"
+                  />
+                </div>
                 <div
                   onClick={() => handleDelete(index)}
                   className="absolute -right-1 -bottom-1
-                  rounded-full h-4 w-4
-                  bg-black/0 text-black
-                  group-hover:bg-neutral-300
-                  transition-all"
+                    rounded-full h-4 w-4
+                    bg-black/0 text-black
+                    group-hover:bg-neutral-300
+                    transition-all"
                 >
                   <GoX></GoX>
                 </div>
