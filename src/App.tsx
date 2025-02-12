@@ -127,11 +127,18 @@ function App() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const setIndex = () => {
       const newIndex = localStorage.getItem("curWallpaperIndex");
       if (newIndex && parseInt(newIndex) !== wallpaperIndex) {
         setwallpaperIndex(parseInt(newIndex));
       }
+    };
+
+    // setting index before the interval
+    setIndex();
+
+    const interval = setInterval(() => {
+      setIndex();
     }, 100);
 
     getWallpaper(wallpaperIndex);
@@ -148,7 +155,7 @@ function App() {
       // fresh load (no saved data)
       addMessageElement(window.innerWidth / 2 - 130, window.innerHeight / 2 - 54);
       addSearchbarElement(window.innerWidth / 2 - 355, window.innerHeight / 2 + 6);
-      addWeatherElement(0, 0);
+      // addWeatherElement(0, 0);
     } else {
       // load saved data
       setMessageElements(JSON.parse(savedMessageElements || "[]"));
