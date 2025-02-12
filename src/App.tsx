@@ -11,7 +11,7 @@ import useMessageElement from "./hooks/useMessageElement";
 import useSearchElement from "./hooks/useSearchElement";
 import useWeatherElement from "./hooks/useWeatherElement";
 
-import bg from "./assets/wp3.jpg";
+// import bg from "./assets/wp3.jpg";
 
 /*
 things to add:
@@ -113,17 +113,6 @@ function App() {
     updateWeatherElementInfo
   } = useWeatherElement();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newIndex = localStorage.getItem("curWallpaperIndex");
-      if (newIndex && parseInt(newIndex) !== wallpaperIndex) {
-        setwallpaperIndex(parseInt(newIndex));
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [wallpaperIndex]);
-
   const getWallpaper = async (index: number) => {
     try {
       const wallpaper = await loadWallpaperFromIndexedDB(index);
@@ -138,7 +127,16 @@ function App() {
   };
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      const newIndex = localStorage.getItem("curWallpaperIndex");
+      if (newIndex && parseInt(newIndex) !== wallpaperIndex) {
+        setwallpaperIndex(parseInt(newIndex));
+      }
+    }, 100);
+
     getWallpaper(wallpaperIndex);
+
+    return () => clearInterval(interval);
   }, [wallpaperIndex]);
 
   useEffect(() => {
@@ -183,7 +181,7 @@ function App() {
     <div
       className="w-screen h-screen select-none font-quicksand overflow-hidden"
       style={{
-        backgroundImage: `url(${wallpaperURL ? wallpaperURL : bg})`,
+        backgroundImage: `url(${wallpaperURL ? wallpaperURL : "bg-neutral-700"})`,
         backgroundSize: "cover"
       }}
     >
