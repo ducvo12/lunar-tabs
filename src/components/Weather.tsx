@@ -94,9 +94,18 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
         setWindDirection(currentWeather.windDirection);
       }
 
+      function getLocalDate(): string {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+      }
+
       // precipitation data
       {
-        const today = new Date().toISOString().split("T")[0];
+        const today = getLocalDate();
         const todayWeather = weatherPeriods.filter((period: { startTime: string }) => {
           return period.startTime.startsWith(today);
         });
@@ -106,6 +115,7 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
           precipitationTerms.test(period.shortForecast)
         );
         if (firstOccurrence) {
+          // console.log(firstOccurrence.startTime);
           const time = formatTime12Hour(firstOccurrence.startTime);
           setPrecipitation(`${firstOccurrence.shortForecast} at ${time}`);
         } else {
