@@ -76,8 +76,9 @@ function App() {
   const [theme] = useState("dark");
   document.documentElement.classList.add(theme);
 
-  const [wallpaperIndex, setwallpaperIndex] = useState(-1);
+  const [wallpaperIndex, setWallpaperIndex] = useState(-1);
   const [wallpaperURL, setWallpaperURL] = useState<string | null>(null);
+  const [isVideo, setIsVideo] = useState(false);
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -113,11 +114,13 @@ function App() {
     updateWeatherElementInfo
   } = useWeatherElement();
 
-  const getWallpaper = async (index: number) => {
+  const setWallpaper = async (index: number) => {
     try {
       const wallpaper = await loadWallpaperFromIndexedDB(index);
       if (wallpaper) {
         setWallpaperURL(URL.createObjectURL(wallpaper));
+
+        setIsVideo(wallpaper.type.split("/")[0] === "video");
       } else {
         setWallpaperURL(null);
       }
@@ -130,18 +133,16 @@ function App() {
     const setIndex = () => {
       const newIndex = localStorage.getItem("curWallpaperIndex");
       if (newIndex && parseInt(newIndex) !== wallpaperIndex) {
-        setwallpaperIndex(parseInt(newIndex));
+        setWallpaperIndex(parseInt(newIndex));
       }
     };
 
     // setting index before the interval
     setIndex();
-
     const interval = setInterval(() => {
       setIndex();
     }, 100);
-
-    getWallpaper(wallpaperIndex);
+    setWallpaper(wallpaperIndex);
 
     return () => clearInterval(interval);
   }, [wallpaperIndex]);
@@ -185,83 +186,94 @@ function App() {
   };
 
   return (
-    <div
-      className="w-screen h-screen select-none font-quicksand overflow-hidden"
-      style={{
-        backgroundImage: `url(${wallpaperURL ? wallpaperURL : "bg-neutral-700"})`,
-        backgroundSize: "cover"
-      }}
-    >
-      <div className="hidden">
-        <div className="absolute top-0 left-1/2 w-[2px] h-full bg-white"></div>
-        <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white"></div>
-      </div>
+    <>
+      {isVideo ? (
+        <video
+          src={wallpaperURL ? wallpaperURL : ""}
+          muted
+          autoPlay
+          loop
+          className="absolute w-screen h-screen object-cover"
+        ></video>
+      ) : (
+        <img
+          src={wallpaperURL ? wallpaperURL : ""}
+          className="absolute w-screen h-screen object-cover"
+        ></img>
+      )}
 
-      {messageElements.map((element) => (
-        <Message
-          key={element.id}
-          x={element.x}
-          y={element.y}
-          canBeDragged={editMode}
-          id={element.id}
-          removeFunc={removeMessageElement}
-          updateFunc={updateMessageElementInfo}
-        />
-      ))}
-      {searchbarElements.map((element) => (
-        <Searchbar
-          key={element.id}
-          x={element.x}
-          y={element.y}
-          canBeDragged={editMode}
-          id={element.id}
-          removeFunc={removeSearchbarElement}
-          updateFunc={updateSearchbarElementInfo}
-        />
-      ))}
-      {weatherElements.map((element) => (
-        <Weather
-          key={element.id}
-          x={element.x}
-          y={element.y}
-          canBeDragged={editMode}
-          id={element.id}
-          removeFunc={removeWeatherElement}
-          updateFunc={updateWeatherElementInfo}
-        />
-      ))}
+      <div className="w-screen h-screen select-none font-quicksand overflow-hidden">
+        <div className="hidden">
+          <div className="absolute top-0 left-1/2 w-[2px] h-full bg-white"></div>
+          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white"></div>
+        </div>
 
-      <Menu
-        visible={menuVisible}
-        restoreDefaultFunc={clearLocalStorage}
-        editWidgetsFunc={toggleEditMode}
-        addMessageFunc={addMessageElement}
-        addSearchbarFunc={addSearchbarElement}
-        addWeatherFunc={addWeatherElement}
-      />
+        {messageElements.map((element) => (
+          <Message
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            canBeDragged={editMode}
+            id={element.id}
+            removeFunc={removeMessageElement}
+            updateFunc={updateMessageElementInfo}
+          />
+        ))}
+        {searchbarElements.map((element) => (
+          <Searchbar
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            canBeDragged={editMode}
+            id={element.id}
+            removeFunc={removeSearchbarElement}
+            updateFunc={updateSearchbarElementInfo}
+          />
+        ))}
+        {weatherElements.map((element) => (
+          <Weather
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            canBeDragged={editMode}
+            id={element.id}
+            removeFunc={removeWeatherElement}
+            updateFunc={updateWeatherElementInfo}
+          />
+        ))}
 
-      <button
-        className={`absolute bottom-3 right-3 z-20
+        <Menu
+          visible={menuVisible}
+          restoreDefaultFunc={clearLocalStorage}
+          editWidgetsFunc={toggleEditMode}
+          addMessageFunc={addMessageElement}
+          addSearchbarFunc={addSearchbarElement}
+          addWeatherFunc={addWeatherElement}
+        />
+
+        <button
+          className={`absolute bottom-3 right-3 z-20
           bg-neutral-800/50 hover:bg-black transition-all
           rounded-full p-2 cursor-pointer
           ${editMode ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
-        onClick={toggleMenu}
-        disabled={editMode}
-      >
-        <GoGear className="text-white" style={{ fontSize: "35px" }} />
-      </button>
-      <button
-        className={`absolute bottom-3 right-3 z-20
+          onClick={toggleMenu}
+          disabled={editMode}
+        >
+          <GoGear className="text-white" style={{ fontSize: "35px" }} />
+        </button>
+        <button
+          className={`absolute bottom-3 right-3 z-20
           bg-neutral-800/50 hover:bg-black transition-all
           rounded-full p-2 pl-3 cursor-pointer
           text-white text-base
           ${!editMode ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
-        onClick={toggleEditMode}
-        disabled={!editMode}
-      >
-        Save Widgets
-      </button>
-    </div>
+          onClick={toggleEditMode}
+          disabled={!editMode}
+        >
+          Save Widgets
+        </button>
+      </div>
+    </>
   );
 }
 

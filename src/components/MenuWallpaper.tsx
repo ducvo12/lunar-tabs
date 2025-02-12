@@ -206,7 +206,7 @@ const MenuWallpaper = () => {
             <input
               id="selectWallpaper"
               type="file"
-              accept="image/*"
+              accept="image/*,video/mp4,video/mov"
               onChange={handleFileChange}
               className="hidden"
             />
