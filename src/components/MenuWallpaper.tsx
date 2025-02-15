@@ -117,6 +117,7 @@ const MenuWallpaper = () => {
   const [wallpaperStatus, setWallpaperStatus] = useState("\u00A0");
 
   const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
+  const [wallpaperDataTypes, setWallpaperDataTypes] = useState<string[] | null>(null);
   const [curWallpaperIndex, setCurWallpaperIndex] = useState(-1);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -153,8 +154,15 @@ const MenuWallpaper = () => {
     try {
       const wallpapers = await loadImageFromIndexedDB();
       if (wallpapers) {
-        const wallpaperURLs = wallpapers.map((wallpaper) => URL.createObjectURL(wallpaper));
+        const wallpaperURLs = [];
+        const wallpaperTypes = [];
+        for (let i = 0; i < wallpapers.length; i++) {
+          wallpaperURLs.push(URL.createObjectURL(wallpapers[i]));
+          wallpaperTypes.push(wallpapers[i].type.split("/")[0]);
+        }
+        // const wallpaperURLs = wallpapers.map((wallpaper) => URL.createObjectURL(wallpaper));
         setWallpaperDataUrls([...wallpaperURLs]);
+        setWallpaperDataTypes([...wallpaperTypes]);
         setWallpaperStatus("Image loaded successfully!");
       } else {
         setWallpaperStatus("No image found.");
@@ -253,19 +261,29 @@ const MenuWallpaper = () => {
                   className="relative w-full h-full rounded-lg
                     flex justify-center items-center"
                 >
-                  <img
-                    src={url}
-                    alt="Wallpaper"
-                    className="object-contain rounded-lg
-                      cursor-pointer"
-                  />
+                  {wallpaperDataTypes![index] === "image" ? (
+                    <img
+                      src={url}
+                      alt="Wallpaper"
+                      className="object-contain rounded-lg
+                        cursor-pointer"
+                    />
+                  ) : (
+                    <video
+                      src={url}
+                      muted
+                      className="object-contain rounded-lg
+                    cursor-pointer"
+                    ></video>
+                  )}
                 </div>
                 <div
                   onClick={() => handleDelete(index)}
                   className="absolute -right-1 -bottom-1
                     rounded-full h-4 w-4
-                    bg-black/0 text-black
+                    bg-black/0 text-black/0
                     group-hover:bg-neutral-300
+                    group-hover:text-black
                     transition-all"
                 >
                   <GoX></GoX>

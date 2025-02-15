@@ -154,7 +154,7 @@ function App() {
 
     if (!savedMessageElements && !savedSearchbarElements) {
       // fresh load (no saved data)
-      addMessageElement(window.innerWidth / 2 - 130, window.innerHeight / 2 - 54);
+      //addMessageElement(window.innerWidth / 2 - 130, window.innerHeight / 2 - 54);
       addSearchbarElement(window.innerWidth / 2 - 355, window.innerHeight / 2 + 6);
       // addWeatherElement(0, 0);
     } else {
@@ -187,20 +187,19 @@ function App() {
 
   return (
     <>
-      {isVideo ? (
-        <video
-          src={wallpaperURL ? wallpaperURL : ""}
-          muted
-          autoPlay
-          loop
-          className="absolute w-screen h-screen object-cover"
-        ></video>
-      ) : (
-        <img
-          src={wallpaperURL ? wallpaperURL : ""}
-          className="absolute w-screen h-screen object-cover"
-        ></img>
-      )}
+      {wallpaperURL ? (
+        isVideo ? (
+          <video
+            src={wallpaperURL}
+            muted
+            autoPlay
+            loop
+            className="absolute w-screen h-screen object-cover"
+          ></video>
+        ) : (
+          <img src={wallpaperURL} className="absolute w-screen h-screen object-cover" />
+        )
+      ) : null}
 
       <div className="w-screen h-screen select-none font-quicksand overflow-hidden">
         <div className="hidden">

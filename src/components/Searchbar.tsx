@@ -14,6 +14,7 @@ interface SearchbarProps {
 const Searchbar = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: SearchbarProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
+  const [isActive, setIsActive] = useState(false);
 
   const updateCirclePosition = () => {
     if (divRef.current) {
@@ -53,21 +54,35 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: Searchbar
         ref={divRef}
         className={`absolute group outline-none rounded-[1px]
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
-          transition-[outline] shadow-xl
+          transition-[outline]
           z-1 hover:z-10`}
       >
-        <form action="https://www.google.com/search" method="GET">
-          <input
-            className="bg-surface2 border-none outline-none
-              w-searchBar h-12 rounded-full
-              indent-5 text-2xl text-text"
-            name="q"
-            type="text"
-            placeholder="Search"
-            autoComplete="off"
-            readOnly={canBeDragged}
-          />
-        </form>
+        <div className="">
+          <form action="https://www.google.com/search" method="GET">
+            <input
+              className={`backdrop-blur-sm border-none outline-none
+                w-[700px] h-10 indent-3 rounded-t-md transition-all
+                text-2xl
+                ${
+                  isActive
+                    ? "text-white placeholder:text-white bg-neutral-900/30"
+                    : "text-white/50 placeholder:text-white/50 bg-neutral-900/10"
+                }`}
+              name="q"
+              type="text"
+              placeholder="Search"
+              autoComplete="off"
+              onFocus={() => setIsActive(true)}
+              onBlur={() => setIsActive(false)}
+              readOnly={canBeDragged}
+            />
+          </form>
+          <div
+            className={`translate-y-[1px] w-[700px] h-[1px] transition-all
+              ${isActive ? "bg-white" : "bg-white/50"}`}
+          ></div>
+        </div>
+
         <div hidden={!canBeDragged}>
           <GoX
             onClick={() => removeFunc(id)}
