@@ -2,6 +2,25 @@ import { useRef, useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { GoX } from "react-icons/go";
 
+const getFormattedTime = (): { time: string; date: string; weekday: string } => {
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  const date = now.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+
+  const weekday = now.toLocaleDateString("en-US", { weekday: "long" });
+
+  return { time, date, weekday };
+};
 interface TimeTextProps {
   x: number;
   y: number;
@@ -13,8 +32,8 @@ interface TimeTextProps {
 
 const TimeText = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TimeTextProps) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
 
+  const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
   const updateCirclePosition = () => {
     if (divRef.current) {
       const rect = divRef.current.getBoundingClientRect();
@@ -27,17 +46,24 @@ const TimeText = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TimeTextPr
       });
     }
   };
-
   const handleStop = (data: { x: number; y: number }) => {
     updateCirclePosition();
     updateFunc(id, data.x, data.y);
   };
 
+  const [timeData, setTimeData] = useState(getFormattedTime());
+
   useEffect(() => {
     updateCirclePosition();
     window.addEventListener("resize", updateCirclePosition);
+
+    const interval = setInterval(() => {
+      setTimeData(getFormattedTime());
+    }, 1000);
+
     return () => {
       window.removeEventListener("resize", updateCirclePosition);
+      clearInterval(interval);
     };
   }, []);
 
@@ -57,7 +83,12 @@ const TimeText = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TimeTextPr
           transition-[outline] shadow-xl
           z-1 hover:z-10`}
       >
-        Welcome
+        <div className="flex flex-col items-center justify-center p-6 rounded-lg bg-white/10 backdrop-blur-md shadow-lg text-white text-center w-[300px]">
+          <h1 className="text-4xl transition-opacity duration-500">{timeData.time}</h1>
+          <p className="text-xl text-white/70">{timeData.weekday}</p>
+          <p className="text-lg text-white/50">{timeData.date}</p>
+        </div>
+
         <div hidden={!canBeDragged}>
           <GoX
             onClick={() => removeFunc(id)}
