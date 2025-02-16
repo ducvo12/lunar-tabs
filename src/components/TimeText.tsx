@@ -86,9 +86,9 @@ const TimeText = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TimeTextPr
         <div
           className="flex flex-col items-center justify-center
             bg-neutral-900/20 backdrop-blur-sm text-white text-center
-            shadow-lg p-4 w-[250px] rounded-lg"
+            shadow-lg p-5 w-[340px] rounded-lg"
         >
-          <h1 className="text-4xl">{timeData.time}</h1>
+          <h1 className="text-[2.65rem]">{timeData.time}</h1>
           <p className="text-xl text-white/70">{timeData.weekday}</p>
           <p className="text-lg text-white/50">{timeData.date}</p>
         </div>
