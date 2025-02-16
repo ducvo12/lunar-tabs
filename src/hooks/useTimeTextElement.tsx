@@ -3,7 +3,7 @@ import { useState } from "react";
 const generateId = () => `id-${Date.now()}`;
 
 const useTimeTextElement = () => {
-  const [TimeTextElements, setTimeTextElements] = useState<{ id: string; x: number; y: number }[]>(
+  const [timeTextElements, setTimeTextElements] = useState<{ id: string; x: number; y: number }[]>(
     []
   );
   const addTimeTextElement = (
@@ -15,10 +15,10 @@ const useTimeTextElement = () => {
       x: x,
       y: y
     };
-    setTimeTextElements([...TimeTextElements, newTimeTextElement]);
+    setTimeTextElements([...timeTextElements, newTimeTextElement]);
   };
   const removeTimeTextElement = (id: string) => {
-    const newTimeTextElements = TimeTextElements.filter((element) => element.id !== id);
+    const newTimeTextElements = timeTextElements.filter((element) => element.id !== id);
     setTimeTextElements(newTimeTextElements);
   };
   const updateTimeTextElementInfo = (id: string, x: number, y: number) => {
@@ -28,7 +28,7 @@ const useTimeTextElement = () => {
   };
 
   return {
-    TimeTextElements,
+    timeTextElements,
     setTimeTextElements,
     addTimeTextElement,
     removeTimeTextElement,

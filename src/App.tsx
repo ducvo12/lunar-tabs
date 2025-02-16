@@ -10,6 +10,8 @@ import Weather from "./components/Weather";
 import useMessageElement from "./hooks/useMessageElement";
 import useSearchElement from "./hooks/useSearchElement";
 import useWeatherElement from "./hooks/useWeatherElement";
+import useTimeTextElement from "./hooks/useTimeTextElement";
+import TimeText from "./components/TimeText";
 
 // import bg from "./assets/wp3.jpg";
 
@@ -114,6 +116,13 @@ function App() {
     removeWeatherElement,
     updateWeatherElementInfo
   } = useWeatherElement();
+  const {
+    timeTextElements,
+    setTimeTextElements,
+    addTimeTextElement,
+    removeTimeTextElement,
+    updateTimeTextElementInfo
+  } = useTimeTextElement();
 
   const setWallpaper = async (index: number) => {
     try {
@@ -152,17 +161,21 @@ function App() {
     const savedMessageElements = localStorage.getItem("messageElements");
     const savedSearchbarElements = localStorage.getItem("searchbarElements");
     const savedWeatherElements = localStorage.getItem("weatherElements");
+    const savedTimeTextElements = localStorage.getItem("timeTextElements");
 
     if (!savedMessageElements && !savedSearchbarElements) {
       // fresh load (no saved data)
-      //addMessageElement(window.innerWidth / 2 - 130, window.innerHeight / 2 - 54);
       addSearchbarElement(window.innerWidth / 2 - 355, window.innerHeight / 2 + 6);
-      // addWeatherElement(0, 0);
+
+      // for testing purposes only
+      addWeatherElement(5, 5);
+      addTimeTextElement(window.innerWidth / 2 - 150, window.innerHeight / 2 - 50);
     } else {
       // load saved data
       setMessageElements(JSON.parse(savedMessageElements || "[]"));
       setSearchbarElements(JSON.parse(savedSearchbarElements || "[]"));
       setWeatherElements(JSON.parse(savedWeatherElements || "[]"));
+      setTimeTextElements(JSON.parse(savedTimeTextElements || "[]"));
     }
     // check this out later!!
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,8 +191,9 @@ function App() {
       localStorage.setItem("messageElements", JSON.stringify(messageElements));
       localStorage.setItem("searchbarElements", JSON.stringify(searchbarElements));
       localStorage.setItem("weatherElements", JSON.stringify(weatherElements));
+      localStorage.setItem("timeTextElements", JSON.stringify(timeTextElements));
     }
-  }, [messageElements, searchbarElements, weatherElements]);
+  }, [messageElements, searchbarElements, weatherElements, timeTextElements]);
 
   const clearLocalStorage = () => {
     localStorage.clear();
@@ -239,6 +253,17 @@ function App() {
             id={element.id}
             removeFunc={removeWeatherElement}
             updateFunc={updateWeatherElementInfo}
+          />
+        ))}
+        {timeTextElements.map((element) => (
+          <TimeText
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            canBeDragged={editMode}
+            id={element.id}
+            removeFunc={removeTimeTextElement}
+            updateFunc={updateTimeTextElementInfo}
           />
         ))}
 
