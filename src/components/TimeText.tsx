@@ -85,7 +85,7 @@ const TimeText = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TimeTextPr
       >
         <div
           className="flex flex-col items-center justify-center
-            bg-neutral-900/20 backdrop-blur-sm text-white text-center
+            bg-neutral-900/30 backdrop-blur-sm text-white text-center
             shadow-lg p-5 w-[340px] rounded-lg"
         >
           <h1 className="text-[2.65rem]">{timeData.time}</h1>

@@ -154,7 +154,7 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
         <div
           ref={divRef}
           className="flex items-center justify-between
-            w-auto h-auto bg-neutral-900/20
+            w-auto h-auto bg-neutral-900/30
             rounded-lg p-5 py-4 text-white text-[22px]"
         >
           {error ? (
