@@ -15,13 +15,14 @@ import useWeatherElement from "./hooks/useWeatherElement";
 
 /*
 things to add:
-wallpaper
 time
+todo list
 calendar
 stocks
 news
 twitter posts?
 settings for each widget
+wallpaper settings
 */
 
 const DB_NAME = "WallpaperDB";
