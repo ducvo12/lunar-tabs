@@ -17,13 +17,15 @@ import TimeText from "./components/TimeText";
 
 /*
 things to add:
-time
+time analog
+weather forcast
 todo list
 calendar
 stocks
 news
 twitter posts?
 settings for each widget
+styles for each widget
 wallpaper settings
 */
 
