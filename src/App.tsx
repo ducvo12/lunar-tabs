@@ -12,6 +12,8 @@ import useSearchElement from "./hooks/useSearchElement";
 import useWeatherElement from "./hooks/useWeatherElement";
 import useTimeTextElement from "./hooks/useTimeTextElement";
 import TimeText from "./components/TimeText";
+import useTodoListElement from "./hooks/useTodoListElement";
+import TodoList from "./components/TodoList";
 
 // import bg from "./assets/wp3.jpg";
 
@@ -125,6 +127,13 @@ function App() {
     removeTimeTextElement,
     updateTimeTextElementInfo
   } = useTimeTextElement();
+  const {
+    todoListElements,
+    setTodoListElements,
+    addTodoListElement,
+    removeTodoListElement,
+    updateTodoListElementInfo
+  } = useTodoListElement();
 
   const setWallpaper = async (index: number) => {
     try {
@@ -164,6 +173,7 @@ function App() {
     const savedSearchbarElements = localStorage.getItem("searchbarElements");
     const savedWeatherElements = localStorage.getItem("weatherElements");
     const savedTimeTextElements = localStorage.getItem("timeTextElements");
+    const savedTodoListElements = localStorage.getItem("todoListElements");
 
     if (!savedMessageElements && !savedSearchbarElements) {
       // fresh load (no saved data)
@@ -172,12 +182,14 @@ function App() {
       // for testing purposes only
       addWeatherElement(5, 5);
       addTimeTextElement(window.innerWidth / 2 - 150, window.innerHeight / 2 - 50);
+      addTodoListElement(window.innerWidth / 2 - 150, window.innerHeight / 2 - 150);
     } else {
       // load saved data
       setMessageElements(JSON.parse(savedMessageElements || "[]"));
       setSearchbarElements(JSON.parse(savedSearchbarElements || "[]"));
       setWeatherElements(JSON.parse(savedWeatherElements || "[]"));
       setTimeTextElements(JSON.parse(savedTimeTextElements || "[]"));
+      setTodoListElements(JSON.parse(savedTodoListElements || "[]"));
     }
     // check this out later!!
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -194,8 +206,9 @@ function App() {
       localStorage.setItem("searchbarElements", JSON.stringify(searchbarElements));
       localStorage.setItem("weatherElements", JSON.stringify(weatherElements));
       localStorage.setItem("timeTextElements", JSON.stringify(timeTextElements));
+      localStorage.setItem("todoListElements", JSON.stringify(todoListElements));
     }
-  }, [messageElements, searchbarElements, weatherElements, timeTextElements]);
+  }, [messageElements, searchbarElements, weatherElements, timeTextElements, todoListElements]);
 
   const clearLocalStorage = () => {
     localStorage.clear();
@@ -266,6 +279,17 @@ function App() {
             id={element.id}
             removeFunc={removeTimeTextElement}
             updateFunc={updateTimeTextElementInfo}
+          />
+        ))}
+        {todoListElements.map((element) => (
+          <TodoList
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            canBeDragged={editMode}
+            id={element.id}
+            removeFunc={removeTodoListElement}
+            updateFunc={updateTodoListElementInfo}
           />
         ))}
 
