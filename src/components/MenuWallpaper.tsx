@@ -111,26 +111,14 @@ function removeImageFromIndexedDB(index: number): Promise<void> {
 }
 
 const MenuWallpaper = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const [wallpaperName, setWallpaperName] = useState("No file selected");
-  const [wallpaperStatus, setWallpaperStatus] = useState("\u00A0");
+  const [wallpaperStatus, setWallpaperStatus] = useState("No file selected");
+  const [wallpaperCount, setWallpaperCount] = useState(0);
 
   const [wallpaperDataUrls, setWallpaperDataUrls] = useState<string[] | null>(null);
   const [wallpaperDataTypes, setWallpaperDataTypes] = useState<string[] | null>(null);
   const [curWallpaperIndex, setCurWallpaperIndex] = useState(-1);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setSelectedFile(event.target.files[0]);
-      setWallpaperName(event.target.files[0].name);
-    } else {
-      setSelectedFile(null);
-      setWallpaperName("No file selected");
-    }
-  };
-
-  const handleSaveWallpaper = async () => {
+  const handleSaveWallpaper = async (selectedFile: File) => {
     if (!selectedFile) {
       setWallpaperStatus("Please select an image first!");
       return;
@@ -145,6 +133,15 @@ const MenuWallpaper = () => {
     }
   };
 
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const selectedFile = event.target.files[0];
+      handleSaveWallpaper(selectedFile);
+    } else {
+      setWallpaperStatus("No file selected");
+    }
+  };
+
   const handleLoad = async () => {
     const ind = localStorage.getItem("curWallpaperIndex");
     if (ind) {
@@ -154,6 +151,8 @@ const MenuWallpaper = () => {
     try {
       const wallpapers = await loadImageFromIndexedDB();
       if (wallpapers) {
+        setWallpaperCount(wallpapers.length);
+
         const wallpaperURLs = [];
         const wallpaperTypes = [];
         for (let i = 0; i < wallpapers.length; i++) {
@@ -207,43 +206,38 @@ const MenuWallpaper = () => {
         grid grid-cols-2 gap-3"
     >
       <div className="flex flex-col">
-        <div className="w-full h-fit bg-neutral-900 p-2 pl-3 rounded-lg mb-3">
-          <div className="text-xl mb-1">Wallpapers</div>
+        <div className="w-full h-fit mb-3 grid grid-cols-2 gap-x-2">
+          <div className="bg-neutral-900 rounded-lg p-1">
+            <div className="text-xl mb-1">Wallpapers</div>
 
-          <div className="grid grid-cols-2 gap-2 mb-1">
-            <input
-              id="selectWallpaper"
-              type="file"
-              accept="image/*,video/mp4,video/mov"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <label
-              htmlFor="selectWallpaper"
-              className="inline-block text-sm text-center
-              w-full py-1
-              text-gray-500 bg-blue-50 hover:bg-slate-200
-              rounded cursor-pointer"
-            >
-              Select Wallpaper
-            </label>
-
-            <button
-              onClick={handleSaveWallpaper}
-              className="inline-block text-sm text-center
-              w-full py-1
-              text-gray-500 bg-blue-50 hover:bg-slate-200
-              rounded cursor-pointer"
-            >
-              Save Wallpaper
-            </button>
+            <div className="mb-1">
+              <input
+                id="selectWallpaper"
+                type="file"
+                accept="image/*,video/mp4,video/mov"
+                onChange={handleFileChange}
+                disabled={wallpaperCount >= 12}
+                className="hidden"
+              />
+              <label
+                htmlFor="selectWallpaper"
+                className={`inline-block text-sm text-center
+                  w-full py-1 rounded cursor-pointer
+                  text-gray-500
+                  ${wallpaperCount >= 12 ? "bg-neutral-800" : "bg-neutral-50 hover:bg-slate-200"}`}
+              >
+                Select Wallpaper
+              </label>
+            </div>
           </div>
 
-          <div className="text-neutral-500">{wallpaperName}</div>
-          <div className="text-neutral-500">{wallpaperStatus}</div>
+          <div className="bg-neutral-900 rounded-lg p-1">
+            <div className="text-neutral-500">{wallpaperStatus}</div>
+            <div className="text-neutral-500">{wallpaperCount}/12 wallpapers</div>
+          </div>
         </div>
 
-        <div className="h-full bg-neutral-900 p-2 rounded-lg grid grid-cols-3 grid-rows-4 gap-2">
+        <div className="h-full bg-neutral-900 p-2 rounded-lg grid grid-rows-4 grid-cols-3 gap-2">
           {wallpaperDataUrls ? (
             wallpaperDataUrls.map((url, index) => (
               <div
@@ -277,6 +271,7 @@ const MenuWallpaper = () => {
                     ></video>
                   )}
                 </div>
+
                 <div
                   onClick={() => handleDelete(index)}
                   className="absolute -right-1 -bottom-1
