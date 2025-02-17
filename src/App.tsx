@@ -17,9 +17,9 @@ import TimeText from "./components/TimeText";
 
 /*
 things to add:
+todo list
 time analog
 weather forcast
-todo list
 calendar
 stocks
 news
@@ -276,6 +276,7 @@ function App() {
           addMessageFunc={addMessageElement}
           addSearchbarFunc={addSearchbarElement}
           addWeatherFunc={addWeatherElement}
+          addTimeTextFunc={addTimeTextElement}
         />
 
         <button
