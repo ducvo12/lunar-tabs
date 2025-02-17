@@ -146,7 +146,7 @@ const Weather = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: WeatherProp
       onStop={(_, data) => handleStop(data)}
     >
       <div
-        className={`absolute group outline-none rounded-[1px]
+        className={`absolute group outline-none
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
           transition-[outline] shadow-xl
           z-1 hover:z-10`}

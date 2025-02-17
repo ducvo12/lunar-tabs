@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { GoX } from "react-icons/go";
+import { CiSquarePlus } from "react-icons/ci";
 
 interface TodoListProps {
   x: number;
@@ -27,11 +28,13 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
       });
     }
   };
-
   const handleStop = (data: { x: number; y: number }) => {
     updateCirclePosition();
     updateFunc(id, data.x, data.y);
   };
+
+  const [todoItems, setTodoItems] = useState<string[]>([]);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     updateCirclePosition();
@@ -51,13 +54,41 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
     >
       <div
         ref={divRef}
-        className={`absolute group rounded-[1px]
-          text-6xl text-text text-center outline-none
+        className={`absolute group rounded-lg outline-none text-white
           ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
-          transition-[outline] shadow-xl
+          transition-[outline] bg-neutral-900/30 shadow-xl w-[300px] p-1 px-[10px]
           z-1 hover:z-10`}
       >
-        Welcome
+        <div className="text-2xl">Tasks:</div>
+        <div className="text-lg pl-3 mb-2">
+          {todoItems.length > 0
+            ? todoItems.map((item, index) => (
+                <div key={index} className="p-2 border-b last:border-b-0">
+                  {item}
+                </div>
+              ))
+            : "All Done!"}
+        </div>
+        <div className="flex flex-row items-center mb-1">
+          <input
+            className={`outline outline-1 outline-white
+            backdrop-blur-sm border-none outline-none
+            w-full h-6 indent-1 rounded-md transition-all
+            text-lg mx-1
+            ${
+              isActive
+                ? "text-white placeholder:text-white bg-neutral-900/30"
+                : "text-white/50 placeholder:text-white/50 bg-neutral-900/10"
+            }`}
+            type="text"
+            placeholder="Add New"
+            autoComplete="off"
+            onFocus={() => setIsActive(true)}
+            onBlur={() => setIsActive(false)}
+            readOnly={canBeDragged}
+          />
+          <CiSquarePlus className="text-4xl -mr-1" />
+        </div>
         <div hidden={!canBeDragged}>
           <GoX
             onClick={() => removeFunc(id)}

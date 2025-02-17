@@ -224,7 +224,9 @@ const MenuWallpaper = () => {
                 className={`inline-block text-sm text-center
                   w-full py-1 rounded cursor-pointer
                   text-gray-500
-                  ${wallpaperCount >= 12 ? "bg-neutral-800" : "bg-neutral-50 hover:bg-slate-200"}`}
+                  ${
+                    wallpaperCount >= 12 ? "bg-neutral-800" : "bg-neutral-50 hover:bg-neutral-300"
+                  }`}
               >
                 Select Wallpaper
               </label>
