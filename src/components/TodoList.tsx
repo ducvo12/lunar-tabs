@@ -103,8 +103,12 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
             type="text"
             placeholder="Add New (Press Enter)"
             autoComplete="off"
-            onFocus={() => setIsActive(true)}
-            onBlur={() => setIsActive(false)}
+            onFocus={() => {
+              if (!canBeDragged) setIsActive(true);
+            }}
+            onBlur={() => {
+              if (!canBeDragged) setIsActive(false);
+            }}
             onKeyDown={(e) => e.key === "Enter" && addToList()}
             readOnly={canBeDragged}
           />

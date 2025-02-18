@@ -72,8 +72,12 @@ const Searchbar = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: Searchbar
               type="text"
               placeholder="Search"
               autoComplete="off"
-              onFocus={() => setIsActive(true)}
-              onBlur={() => setIsActive(false)}
+              onFocus={() => {
+                if (!canBeDragged) setIsActive(true);
+              }}
+              onBlur={() => {
+                if (!canBeDragged) setIsActive(false);
+              }}
               readOnly={canBeDragged}
             />
           </form>
