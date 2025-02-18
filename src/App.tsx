@@ -225,6 +225,8 @@ function App() {
             muted
             autoPlay
             loop
+            onPlay={(e) => e.currentTarget.play()}
+            onPause={(e) => e.currentTarget.play()}
             className="absolute w-screen h-screen object-cover"
           ></video>
         ) : (
