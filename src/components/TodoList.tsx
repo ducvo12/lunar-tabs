@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { GoX } from "react-icons/go";
-import { CiSquarePlus } from "react-icons/ci";
+import { FaCheck } from "react-icons/fa6";
 
 interface TodoListProps {
   x: number;
@@ -35,6 +35,17 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
 
   const [todoItems, setTodoItems] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addToList = () => {
+    if (inputRef.current) {
+      const value = inputRef.current.value.trim();
+      if (value !== "") {
+        setTodoItems([...todoItems, value]);
+        inputRef.current.value = "";
+      }
+    }
+  };
 
   useEffect(() => {
     updateCirclePosition();
@@ -60,34 +71,43 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
           z-1 hover:z-10`}
       >
         <div className="text-2xl">Tasks:</div>
-        <div className="text-lg pl-3 mb-2">
-          {todoItems.length > 0
-            ? todoItems.map((item, index) => (
-                <div key={index} className="p-2 border-b last:border-b-0">
-                  {item}
-                </div>
-              ))
-            : "All Done!"}
+        <div className="text-lg mb-2">
+          {todoItems.length > 0 ? (
+            todoItems.map((item, index) => (
+              <li
+                key={index}
+                onClick={() => setTodoItems(todoItems.filter((_, i) => i !== index))}
+                className="group/item flex flex-row items-center gap-2
+                    rounded-md hover:bg-neutral-900/60"
+              >
+                <FaCheck className="ml-1 -mr-1 opacity-0 group-hover/item:opacity-100" />
+                <div className="text-lg">{item}</div>
+              </li>
+            ))
+          ) : (
+            <span className="ml-6">All Done!</span>
+          )}
         </div>
-        <div className="flex flex-row items-center mb-1">
+        <div className="flex flex-row items-center mb-2">
           <input
+            ref={inputRef}
             className={`outline outline-1 outline-white
             backdrop-blur-sm border-none outline-none
             w-full h-6 indent-1 rounded-md transition-all
-            text-lg mx-1
+            text-md mx-1
             ${
               isActive
                 ? "text-white placeholder:text-white bg-neutral-900/30"
                 : "text-white/50 placeholder:text-white/50 bg-neutral-900/10"
             }`}
             type="text"
-            placeholder="Add New"
+            placeholder="Add New (Press Enter)"
             autoComplete="off"
             onFocus={() => setIsActive(true)}
             onBlur={() => setIsActive(false)}
+            onKeyDown={(e) => e.key === "Enter" && addToList()}
             readOnly={canBeDragged}
           />
-          <CiSquarePlus className="text-4xl -mr-1" />
         </div>
         <div hidden={!canBeDragged}>
           <GoX
