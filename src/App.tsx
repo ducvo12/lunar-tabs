@@ -98,6 +98,7 @@ function App() {
     setMenuVisible(false);
     setEditMode(!editMode);
   };
+  const [showCenterLines, setShowCenterLines] = useState(false);
 
   const {
     messageElements,
@@ -232,7 +233,7 @@ function App() {
       ) : null}
 
       <div className="w-screen h-screen select-none font-quicksand overflow-hidden">
-        <div className="hidden">
+        <div className={showCenterLines && editMode ? "" : "hidden"}>
           <div className="absolute top-0 left-1/2 w-[2px] h-full bg-white"></div>
           <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white"></div>
         </div>
@@ -323,6 +324,28 @@ function App() {
           disabled={!editMode}
         >
           Save Widgets
+        </button>
+        <button
+          className={`absolute bottom-14 right-3 z-20
+          bg-neutral-800/50 hover:bg-black transition-all
+          rounded-full p-2 pl-3 cursor-pointer
+          text-white text-base
+          flex flex-row
+          ${!editMode ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
+          onClick={() => setShowCenterLines(!showCenterLines)}
+          disabled={!editMode}
+        >
+          <div
+            className={`w-12 h-6 p-1 mr-2 -ml-1
+            flex items-center rounded-full cursor-pointer transition-all duration-300
+            ${showCenterLines ? "bg-green-500" : "bg-neutral-900/60"}`}
+          >
+            <div
+              className={`h-4 w-4 bg-white rounded-full shadow-md transform transition-transform duration-300
+              ${showCenterLines ? "translate-x-6" : "translate-x-0"}`}
+            />
+          </div>
+          Center Lines
         </button>
       </div>
     </>
