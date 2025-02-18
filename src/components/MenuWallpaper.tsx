@@ -278,7 +278,7 @@ const MenuWallpaper = () => {
                   onClick={() => handleDelete(index)}
                   className="absolute -right-1 -bottom-1
                     rounded-full h-4 w-4
-                    bg-black/0 text-black/0
+                    bg-black/0 text-black/0 text-base
                     group-hover:bg-neutral-300
                     group-hover:text-black
                     transition-all"
