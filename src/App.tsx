@@ -19,7 +19,7 @@ import TodoList from "./components/TodoList";
 
 /*
 things to add:
-todo list
+save todo items
 time analog
 weather forcast
 calendar
@@ -302,6 +302,7 @@ function App() {
           addSearchbarFunc={addSearchbarElement}
           addWeatherFunc={addWeatherElement}
           addTimeTextFunc={addTimeTextElement}
+          addTodoListFunc={addTodoListElement}
         />
 
         <button
