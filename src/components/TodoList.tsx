@@ -48,12 +48,25 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
   };
 
   useEffect(() => {
+    // get todoItems from localStorage
+    setTodoItems(JSON.parse(localStorage.getItem("todoItems") || "[]"));
+
+    // update circle position
     updateCirclePosition();
     window.addEventListener("resize", updateCirclePosition);
     return () => {
       window.removeEventListener("resize", updateCirclePosition);
     };
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      // preventing instant override when DOM loads
+      localStorage.setItem("todoItems", JSON.stringify(todoItems));
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [todoItems]);
 
   return (
     <Draggable
