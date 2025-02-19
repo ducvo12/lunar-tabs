@@ -15,8 +15,6 @@ import TimeText from "./components/TimeText";
 import useTodoListElement from "./hooks/useTodoListElement";
 import TodoList from "./components/TodoList";
 
-// import bg from "./assets/wp3.jpg";
-
 /*
 things to add:
 save todo items
