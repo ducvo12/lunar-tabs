@@ -17,9 +17,10 @@ import TodoList from "./components/TodoList";
 
 /*
 things to add:
-save todo items
 time analog
 weather forcast
+bookmarks
+searchbar math + dictionary
 calendar
 stocks
 news
