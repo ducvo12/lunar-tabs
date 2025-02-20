@@ -11,6 +11,7 @@ interface MenuProps {
   addWeatherFunc: () => void;
   addTimeTextFunc: () => void;
   addTodoListFunc: () => void;
+  addWeatherForecastFunc: () => void;
 }
 
 const Menu = ({
@@ -21,7 +22,8 @@ const Menu = ({
   addSearchbarFunc,
   addWeatherFunc,
   addTimeTextFunc,
-  addTodoListFunc
+  addTodoListFunc,
+  addWeatherForecastFunc
 }: MenuProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -33,6 +35,7 @@ const Menu = ({
       addWeatherFunc={addWeatherFunc}
       addTimeTextFunc={addTimeTextFunc}
       addTodoListFunc={addTodoListFunc}
+      addWeatherForecastFunc={addWeatherForecastFunc}
     />,
     <div>Content for Tab 2</div>,
     <MenuWallpaper></MenuWallpaper>

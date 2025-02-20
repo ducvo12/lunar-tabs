@@ -6,6 +6,7 @@ interface MenuWidgetsProps {
   addWeatherFunc: () => void;
   addTimeTextFunc: () => void;
   addTodoListFunc: () => void;
+  addWeatherForecastFunc: () => void;
 }
 
 const MenuWidgets = ({
@@ -13,7 +14,8 @@ const MenuWidgets = ({
   addSearchbarFunc,
   addWeatherFunc,
   addTimeTextFunc,
-  addTodoListFunc
+  addTodoListFunc,
+  addWeatherForecastFunc
 }: MenuWidgetsProps) => {
   return (
     <main className="grid grid-cols-2 lg:grid-cols-3 gap-4">
@@ -22,6 +24,7 @@ const MenuWidgets = ({
       {MenuWidgetSquare({ title: "Weather", func: addWeatherFunc })}
       {MenuWidgetSquare({ title: "Time", func: addTimeTextFunc })}
       {MenuWidgetSquare({ title: "Todo List", func: addTodoListFunc })}
+      {MenuWidgetSquare({ title: "Weather Forecast", func: addWeatherForecastFunc })}
     </main>
   );
 };

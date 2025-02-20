@@ -3,17 +3,21 @@ import { useEffect, useState, useRef } from "react";
 import { GoGear } from "react-icons/go";
 import Menu from "./components/Menu";
 
+// importing components
 import Message from "./components/Message";
 import Searchbar from "./components/Searchbar";
 import Weather from "./components/Weather";
+import TimeText from "./components/TimeText";
+import TodoList from "./components/TodoList";
+import WeatherForecast from "./components/WeatherForecast";
 
+// importing hooks
 import useMessageElement from "./hooks/useMessageElement";
 import useSearchElement from "./hooks/useSearchElement";
 import useWeatherElement from "./hooks/useWeatherElement";
 import useTimeTextElement from "./hooks/useTimeTextElement";
-import TimeText from "./components/TimeText";
 import useTodoListElement from "./hooks/useTodoListElement";
-import TodoList from "./components/TodoList";
+import useWeatherForecastElement from "./hooks/useWeatherForecastElement";
 
 /*
 things to add:
@@ -134,6 +138,13 @@ function App() {
     removeTodoListElement,
     updateTodoListElementInfo
   } = useTodoListElement();
+  const {
+    weatherForecastElements,
+    setWeatherForecastElements,
+    addWeatherForecastElement,
+    removeWeatherForecastElement,
+    updateWeatherForecastElementInfo
+  } = useWeatherForecastElement();
 
   const setWallpaper = async (index: number) => {
     try {
@@ -174,6 +185,7 @@ function App() {
     const savedWeatherElements = localStorage.getItem("weatherElements");
     const savedTimeTextElements = localStorage.getItem("timeTextElements");
     const savedTodoListElements = localStorage.getItem("todoListElements");
+    const savedWeatherForecastElements = localStorage.getItem("weatherForecastElements");
 
     if (!savedMessageElements && !savedSearchbarElements) {
       // fresh load (no saved data)
@@ -190,6 +202,7 @@ function App() {
       setWeatherElements(JSON.parse(savedWeatherElements || "[]"));
       setTimeTextElements(JSON.parse(savedTimeTextElements || "[]"));
       setTodoListElements(JSON.parse(savedTodoListElements || "[]"));
+      setWeatherForecastElements(JSON.parse(savedWeatherForecastElements || "[]"));
     }
     // check this out later!!
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,8 +220,16 @@ function App() {
       localStorage.setItem("weatherElements", JSON.stringify(weatherElements));
       localStorage.setItem("timeTextElements", JSON.stringify(timeTextElements));
       localStorage.setItem("todoListElements", JSON.stringify(todoListElements));
+      localStorage.setItem("weatherForecastElements", JSON.stringify(weatherForecastElements));
     }
-  }, [messageElements, searchbarElements, weatherElements, timeTextElements, todoListElements]);
+  }, [
+    messageElements,
+    searchbarElements,
+    weatherElements,
+    timeTextElements,
+    todoListElements,
+    weatherForecastElements
+  ]);
 
   const clearLocalStorage = () => {
     localStorage.clear();
@@ -294,6 +315,17 @@ function App() {
             updateFunc={updateTodoListElementInfo}
           />
         ))}
+        {weatherForecastElements.map((element) => (
+          <WeatherForecast
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            canBeDragged={editMode}
+            id={element.id}
+            removeFunc={removeWeatherForecastElement}
+            updateFunc={updateWeatherForecastElementInfo}
+          />
+        ))}
 
         <Menu
           visible={menuVisible}
@@ -304,6 +336,7 @@ function App() {
           addWeatherFunc={addWeatherElement}
           addTimeTextFunc={addTimeTextElement}
           addTodoListFunc={addTodoListElement}
+          addWeatherForecastFunc={addWeatherForecastElement}
         />
 
         <button
