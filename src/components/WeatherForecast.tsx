@@ -21,7 +21,6 @@ const WeatherForecast = ({
 }: WeatherForecastProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [circlePosition, setCirclePosition] = useState({ top: false, left: false });
-
   const updateCirclePosition = () => {
     if (divRef.current) {
       const rect = divRef.current.getBoundingClientRect();
@@ -34,14 +33,63 @@ const WeatherForecast = ({
       });
     }
   };
-
   const handleStop = (data: { x: number; y: number }) => {
     updateCirclePosition();
     updateFunc(id, data.x, data.y);
   };
 
+  const [forecast, setForecast] = useState<{ day: string; high: number; low: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const lat = 42.18979;
+  const lon = -87.90838;
+
+  const fetchWeather = async () => {
+    try {
+      // Step 1: Get the gridpoint info
+      const gridResponse = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
+      const gridData = await gridResponse.json();
+
+      if (!gridData?.properties) {
+        throw new Error("Invalid grid data");
+      }
+
+      const { gridId, gridX, gridY } = gridData.properties;
+
+      // Step 2: Fetch the 7-day forecast using the grid ID and coordinates
+      const forecastResponse = await fetch(
+        `https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast`
+      );
+      const forecastData = await forecastResponse.json();
+
+      if (forecastData?.properties?.periods) {
+        const dailyForecast = forecastData.properties.periods
+          .filter((period: { isDaytime: boolean }) => period.isDaytime)
+          .map(
+            (
+              day: { startTime: string; temperature: number; isDaytime: boolean },
+              index: number
+            ) => ({
+              day: new Date(day.startTime).toLocaleDateString("en-US", { weekday: "long" }),
+              high: day.temperature,
+              low: forecastData.properties.periods[index + 1]?.temperature ?? day.temperature // Get next period as low
+            })
+          )
+          .slice(0, 7); // Limit to 7 days
+
+        setForecast(dailyForecast);
+      }
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     updateCirclePosition();
+    fetchWeather();
+
     window.addEventListener("resize", updateCirclePosition);
     return () => {
       window.removeEventListener("resize", updateCirclePosition);
@@ -64,7 +112,27 @@ const WeatherForecast = ({
           transition-[outline] shadow-xl
           z-1 hover:z-10`}
       >
-        Welcome
+        <div className="p-6 bg-gray-800 text-white rounded-lg shadow-lg max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">7-Day Weather Forecast (New York)</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <ul className="space-y-3">
+              {forecast.map(({ day, high, low }, index) => (
+                <li
+                  key={index}
+                  className="flex justify-between items-center bg-gray-700 p-3 rounded-md text-sm"
+                >
+                  <span className="font-medium">{day}</span>
+                  <span>
+                    <span className="text-yellow-300">{high}°</span> /{" "}
+                    <span className="text-blue-300">{low}°</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <div hidden={!canBeDragged}>
           <GoX
             onClick={() => removeFunc(id)}
