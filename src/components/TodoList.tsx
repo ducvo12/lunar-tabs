@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { GoX } from "react-icons/go";
 import { FaCheck } from "react-icons/fa6";
+import { RxDragHandleDots2 } from "react-icons/rx";
 
 interface TodoListProps {
   x: number;
@@ -53,6 +54,7 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
 
     // update circle position
     updateCirclePosition();
+
     window.addEventListener("resize", updateCirclePosition);
     return () => {
       window.removeEventListener("resize", updateCirclePosition);
@@ -67,6 +69,8 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
 
     return () => clearTimeout(timeout);
   }, [todoItems]);
+
+  console.log(document.body.style.cursor);
 
   return (
     <Draggable
@@ -89,12 +93,26 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
             todoItems.map((item, index) => (
               <li
                 key={index}
-                onClick={() => setTodoItems(todoItems.filter((_, i) => i !== index))}
-                className="group/item flex flex-row items-center gap-2
-                    rounded-md hover:bg-neutral-900/60"
+                className="group/item flex flex-row items-center justify-between h-7
+                  rounded-md hover:bg-neutral-900/60"
               >
-                <FaCheck className="ml-1 -mr-1 opacity-0 group-hover/item:opacity-100" />
-                <div className="text-lg">{item}</div>
+                <div
+                  onClick={() => setTodoItems(todoItems.filter((_, i) => i !== index))}
+                  className="flex flex-row items-center gap-2"
+                >
+                  <FaCheck className="ml-1 -mr-1 opacity-0 group-hover/item:opacity-100" />
+                  <div className="text-lg">{item}</div>
+                </div>
+                <div
+                  className={`mr-[2px] 
+                    group-hover/item:opacity-100
+                    hover:bg-neutral-900/60
+                    h-6 rounded-md flex items-center justify-center
+                    transition-colors select-none
+                    cursor-grab`}
+                >
+                  <RxDragHandleDots2 />
+                </div>
               </li>
             ))
           ) : (

@@ -21,10 +21,11 @@ import useWeatherForecastElement from "./hooks/useWeatherForecastElement";
 
 /*
 things to add:
-time analog
-weather forcast
+move tasks around
 bookmarks
 searchbar math + dictionary
+weather forcast
+time analog
 calendar
 stocks
 news
