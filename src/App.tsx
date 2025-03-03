@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 
 import { GoGear } from "react-icons/go";
-import Menu from "./components/Menu";
+import Menu from "./components/Menu/Menu";
 
 // importing components
 import Message from "./components/Message";
 import Searchbar from "./components/Searchbar";
-import Weather from "./components/Weather";
-import TimeText from "./components/TimeText";
-import TodoList from "./components/TodoList";
-import WeatherForecast from "./components/WeatherForecast";
+import Weather from "./components/Weather/Weather";
+import TimeText from "./components/Time/TimeText";
+import TodoList from "./components/TodoList/TodoList";
+import WeatherForecast from "./components/Weather/WeatherForecast";
 
 // importing hooks
 import useMessageElement from "./hooks/useMessageElement";
