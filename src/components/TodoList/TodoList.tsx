@@ -1,7 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { GoX } from "react-icons/go";
-import { FaCheck } from "react-icons/fa6";
+
+import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import TodoListTask from "./TodoListTask";
 
 interface TodoListProps {
   x: number;
@@ -33,7 +36,7 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
     updateFunc(id, data.x, data.y);
   };
 
-  const [todoItems, setTodoItems] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<{ id: number; content: string }[]>([]);
   const [isActive, setIsActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,15 +44,38 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
     if (inputRef.current) {
       const value = inputRef.current.value.trim();
       if (value !== "") {
-        setTodoItems([...todoItems, value]);
+        const newId = tasks.length === 0 ? 1 : tasks[tasks.length - 1].id + 1;
+        const newTask = { id: newId, content: value };
+        setTasks([...tasks, newTask]);
         inputRef.current.value = "";
       }
     }
   };
+  const removeFromList = (id: number) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
+  const getTaskPosition = (id: number) => {
+    return tasks.findIndex((task) => task.id === id);
+  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const activeId = Number(active.id);
+    const overId = Number(over.id);
+
+    setTasks((prevTasks) => {
+      const originalPos = getTaskPosition(activeId);
+      const newPos = getTaskPosition(overId);
+      return arrayMove(prevTasks, originalPos, newPos);
+    });
+  };
 
   useEffect(() => {
-    // get todoItems from localStorage
-    setTodoItems(JSON.parse(localStorage.getItem("todoItems") || "[]"));
+    // get tasks from localStorage
+    setTasks(JSON.parse(localStorage.getItem("tasks") || "[]"));
 
     // update circle position
     updateCirclePosition();
@@ -63,13 +89,11 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
   useEffect(() => {
     const timeout = setTimeout(() => {
       // preventing instant override when DOM loads
-      localStorage.setItem("todoItems", JSON.stringify(todoItems));
+      localStorage.setItem("tasks", JSON.stringify(tasks));
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [todoItems]);
-
-  console.log(document.body.style.cursor);
+  }, [tasks]);
 
   return (
     <Draggable
@@ -87,25 +111,28 @@ const TodoList = ({ x, y, canBeDragged, id, removeFunc, updateFunc }: TodoListPr
           z-1 hover:z-10`}
       >
         <div className="text-2xl">Tasks:</div>
+
         <div className="text-lg mb-2">
-          {todoItems.length > 0 ? (
-            todoItems.map((item, index) => (
-              <li
-                key={index}
-                className="group/item flex flex-row items-center h-7
-                  rounded-md hover:bg-neutral-900/60"
-              >
-                <FaCheck
-                  onClick={() => setTodoItems(todoItems.filter((_, i) => i !== index))}
-                  className="ml-1 -mr-1 opacity-0 group-hover/item:opacity-100"
-                />
-                <div className="text-lg ml-2">{item}</div>
-              </li>
-            ))
+          {tasks.length > 0 ? (
+            <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+              <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
+                {tasks.map((task) => (
+                  <div>
+                    <TodoListTask
+                      id={task.id}
+                      key={task.id}
+                      content={task.content}
+                      removeFromList={removeFromList}
+                    />
+                  </div>
+                ))}
+              </SortableContext>
+            </DndContext>
           ) : (
             <span className="ml-6">All Done!</span>
           )}
         </div>
+
         <div className="flex flex-row items-center mb-2">
           <input
             ref={inputRef}
