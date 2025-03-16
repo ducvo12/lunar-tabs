@@ -63,21 +63,20 @@ const WeatherForecast = ({
       const forecastData = await forecastResponse.json();
 
       if (forecastData?.properties?.periods) {
-        const dailyForecast = forecastData.properties.periods
-          .filter((period: { isDaytime: boolean }) => period.isDaytime)
-          .map(
-            (
-              day: { startTime: string; temperature: number; isDaytime: boolean },
-              index: number
-            ) => ({
-              day: new Date(day.startTime).toLocaleDateString("en-US", { weekday: "long" }),
-              high: day.temperature,
-              low: forecastData.properties.periods[index + 1]?.temperature ?? day.temperature // Get next period as low
-            })
-          )
-          .slice(0, 7); // Limit to 7 days
+        const dailyForecast = forecastData.properties.periods;
 
-        setForecast(dailyForecast);
+        const forecastArray = [];
+        for (let i = 1; i < dailyForecast.length; i += 2) {
+          if (i + 1 < dailyForecast.length) {
+            forecastArray.push({
+              day: dailyForecast[i].name, // "Monday", "Tuesday", etc.
+              high: dailyForecast[i].temperature, // High temperature
+              low: dailyForecast[i + 1].temperature // Low temperature (night)
+            });
+          }
+        }
+        setForecast(forecastArray);
+        // console.log(forecastArray);
       }
     } catch (error) {
       console.error("Error fetching weather data:", error);
@@ -97,6 +96,14 @@ const WeatherForecast = ({
   }, []);
 
   return (
+    <Draggable
+      defaultPosition={{ x: x, y: y }}
+      bounds="parent"
+      disabled={!canBeDragged}
+      onDrag={updateCirclePosition}
+      onStop={(_, data) => handleStop(data)}
+    >
+      {/*
     <Draggable
       defaultPosition={{ x: x, y: y }}
       bounds="parent"
@@ -141,6 +148,52 @@ const WeatherForecast = ({
               opacity-0 group-hover:opacity-100 transition-opacity
               ${circlePosition.top ? "-bottom-3" : "-top-3"}
               ${circlePosition.left ? "-right-3" : "-left-3"}`}
+          ></GoX>
+        </div>
+      </div>
+    </Draggable>
+    */}
+      <div
+        ref={divRef}
+        className={`absolute group rounded-[1px]
+          text-6xl text-text text-center outline-none
+          ${canBeDragged ? "hover:outline hover:outline-2 hover:outline-white" : ""}
+          transition-[outline] shadow-xl
+          z-1 hover:z-10`}
+      >
+        <div
+          className="flex flex-col items-center justify-center
+            bg-neutral-900/30 backdrop-blur-sm text-white text-center
+            shadow-lg p-2 rounded-lg"
+        >
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <div className="flex flex-row gap-1">
+              {forecast.map(({ day, high, low }, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col justify-center items-center bg-neutral-900/20 p-2 rounded-md text-sm"
+                >
+                  <span className="font-medium">{day.slice(0, 3)}</span>
+                  <span className="text-lg">
+                    <span className="text-yellow-300">{high}° </span>/
+                    <span className="text-blue-300"> {low}°</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div hidden={!canBeDragged}>
+          <GoX
+            onClick={() => removeFunc(id)}
+            className={`absolute text-xl rounded-full
+                  bg-white text-black
+                  opacity-0 group-hover:opacity-100 transition-opacity
+                  ${circlePosition.top ? "-bottom-3" : "-top-3"}
+                  ${circlePosition.left ? "-right-3" : "-left-3"}`}
           ></GoX>
         </div>
       </div>
