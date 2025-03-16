@@ -9,7 +9,7 @@ import Searchbar from "./components/Searchbar";
 import Weather from "./components/Weather/Weather";
 import TimeText from "./components/Time/TimeText";
 import TodoList from "./components/TodoList/TodoList";
-import WeatherForecast from "./components/Weather/WeatherForecast";
+import WeatherForecastHorizontal from "./components/Weather/WeatherForecastHorizontal";
 
 // importing hooks
 import useMessageElement from "./hooks/useMessageElement";
@@ -17,7 +17,7 @@ import useSearchElement from "./hooks/useSearchElement";
 import useWeatherElement from "./hooks/useWeatherElement";
 import useTimeTextElement from "./hooks/useTimeTextElement";
 import useTodoListElement from "./hooks/useTodoListElement";
-import useWeatherForecastElement from "./hooks/useWeatherForecastElement";
+import useWeatherForecastHorizontalElement from "./hooks/useWeatherForecastHorizontalElement";
 
 /*
 things to add:
@@ -140,12 +140,12 @@ function App() {
     updateTodoListElementInfo
   } = useTodoListElement();
   const {
-    weatherForecastElements,
-    setWeatherForecastElements,
-    addWeatherForecastElement,
-    removeWeatherForecastElement,
-    updateWeatherForecastElementInfo
-  } = useWeatherForecastElement();
+    weatherForecastHorizontalElements,
+    setWeatherForecastHorizontalElements,
+    addWeatherForecastHorizontalElement,
+    removeWeatherForecastHorizontalElement,
+    updateWeatherForecastHorizontalElementInfo
+  } = useWeatherForecastHorizontalElement();
 
   const setWallpaper = async (index: number) => {
     try {
@@ -186,7 +186,9 @@ function App() {
     const savedWeatherElements = localStorage.getItem("weatherElements");
     const savedTimeTextElements = localStorage.getItem("timeTextElements");
     const savedTodoListElements = localStorage.getItem("todoListElements");
-    const savedWeatherForecastElements = localStorage.getItem("weatherForecastElements");
+    const savedWeatherForecastHorizontalElements = localStorage.getItem(
+      "weatherForecastHorizontalElements"
+    );
 
     if (!savedMessageElements && !savedSearchbarElements) {
       // fresh load (no saved data)
@@ -203,7 +205,9 @@ function App() {
       setWeatherElements(JSON.parse(savedWeatherElements || "[]"));
       setTimeTextElements(JSON.parse(savedTimeTextElements || "[]"));
       setTodoListElements(JSON.parse(savedTodoListElements || "[]"));
-      setWeatherForecastElements(JSON.parse(savedWeatherForecastElements || "[]"));
+      setWeatherForecastHorizontalElements(
+        JSON.parse(savedWeatherForecastHorizontalElements || "[]")
+      );
     }
     // check this out later!!
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -221,7 +225,10 @@ function App() {
       localStorage.setItem("weatherElements", JSON.stringify(weatherElements));
       localStorage.setItem("timeTextElements", JSON.stringify(timeTextElements));
       localStorage.setItem("todoListElements", JSON.stringify(todoListElements));
-      localStorage.setItem("weatherForecastElements", JSON.stringify(weatherForecastElements));
+      localStorage.setItem(
+        "weatherForecastHorizontalElements",
+        JSON.stringify(weatherForecastHorizontalElements)
+      );
     }
   }, [
     messageElements,
@@ -229,7 +236,7 @@ function App() {
     weatherElements,
     timeTextElements,
     todoListElements,
-    weatherForecastElements
+    weatherForecastHorizontalElements
   ]);
 
   const clearLocalStorage = () => {
@@ -316,15 +323,15 @@ function App() {
             updateFunc={updateTodoListElementInfo}
           />
         ))}
-        {weatherForecastElements.map((element) => (
-          <WeatherForecast
+        {weatherForecastHorizontalElements.map((element) => (
+          <WeatherForecastHorizontal
             key={element.id}
             x={element.x}
             y={element.y}
             canBeDragged={editMode}
             id={element.id}
-            removeFunc={removeWeatherForecastElement}
-            updateFunc={updateWeatherForecastElementInfo}
+            removeFunc={removeWeatherForecastHorizontalElement}
+            updateFunc={updateWeatherForecastHorizontalElementInfo}
           />
         ))}
 
@@ -337,7 +344,7 @@ function App() {
           addWeatherFunc={addWeatherElement}
           addTimeTextFunc={addTimeTextElement}
           addTodoListFunc={addTodoListElement}
-          addWeatherForecastFunc={addWeatherForecastElement}
+          addWeatherForecastHorizontalFunc={addWeatherForecastHorizontalElement}
         />
 
         <button

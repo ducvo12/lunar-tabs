@@ -11,7 +11,7 @@ interface WeatherForecastProps {
   updateFunc: (id: string, x: number, y: number) => void;
 }
 
-const WeatherForecast = ({
+const WeatherForecastHorizontal = ({
   x,
   y,
   canBeDragged,
@@ -203,4 +203,4 @@ const WeatherForecast = ({
     </Draggable>
   );
 };
-export default WeatherForecast;
+export default WeatherForecastHorizontal;
