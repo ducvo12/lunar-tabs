@@ -93,6 +93,9 @@ const WeatherForecast = ({
     return () => {
       window.removeEventListener("resize", updateCirclePosition);
     };
+
+    // check this out later!!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
